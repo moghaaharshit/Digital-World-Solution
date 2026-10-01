@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Digital World Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --gold: #d5a53d;
+        --gold-soft: #e8c05b;
+        --dark: #0c1014;
+        --dark-2: #111922;
+        --muted: #cfd7dd;
+        --cream: #f2efe9;
+        --white: #ffffff;
+        --shadow: rgba(0, 0, 0, 0.22);
+      }
+
+      * { box-sizing: border-box; }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        font-family: 'Inter', sans-serif;
+        background: #d9d9d9;
+        color: var(--white);
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        padding: 0;
+      }
+
+      .page-shell {
+        width: 100%;
+        min-height: 100vh;
+        background: #161616;
+      }
+
+      section[id], footer[id] {
+        scroll-margin-top: 60px;
+      }
+
+      .contact-strip {
+        background: #0d1116;
+        color: #f4f4f4;
+        padding: 12px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 26px;
+        flex-wrap: wrap;
+        font-size: 14px;
+      }
+
+      .contact-item {
+        opacity: 0.92;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        white-space: nowrap;
+      }
+
+      .contact-item a,
+      .footer-column a,
+      .contact-list a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .contact-item .icon {
+        font-size: 18px;
+        color: var(--gold-soft);
+      }
+
+      .nav-wrap {
+        background: rgba(250, 249, 246, 0.96);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        padding: 0 32px;
+      }
+
+      .nav {
+        max-width: 1360px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 82px;
+        gap: 20px;
+        position: relative;
+      }
+
+      .brand {
+        color: #1a1a1a;
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 700;
+        font-size: clamp(2rem, 2.2vw, 3rem);
+        display: flex;
+        align-items: center;
+        letter-spacing: -0.04em;
+        white-space: nowrap;
+      }
+
+      .brand span {
+        position: relative;
+        top: -2px;
+      }
+
+      .nav-menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(18px, 2vw, 52px);
+        flex: 1;
+        flex-wrap: wrap;
+      }
+
+      .nav-menu a {
+        text-decoration: none;
+        color: #141414;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0.9;
+        transition: opacity 0.2s ease;
+      }
+
+      .nav-menu a:hover {
+        opacity: 1;
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .menu-toggle {
+        display: none;
+        width: 46px;
+        height: 46px;
+        border: 1px solid rgba(17, 17, 17, 0.3);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.6);
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .menu-toggle span,
+      .menu-toggle::before,
+      .menu-toggle::after {
+        content: "";
+        display: block;
+        width: 20px;
+        height: 2px;
+        border-radius: 2px;
+        background: #171717;
+        transition: transform 0.25s ease, opacity 0.2s ease;
+      }
+
+      .menu-toggle span {
+        margin: 5px 0;
+      }
+
+      .menu-toggle.active::before {
+        transform: translateY(7px) rotate(45deg);
+      }
+
+      .menu-toggle.active span {
+        opacity: 0;
+      }
+
+      .menu-toggle.active::after {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+
+      .cta-link,
+      .primary-btn,
+      .secondary-btn {
+        border-radius: 999px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .cta-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        color: #1a1a1a;
+        border: 1.5px solid rgba(17, 17, 17, 0.8);
+        background: transparent;
+        padding: 13px 20px;
+        min-width: 160px;
+        font-size: 15px;
+      }
+
+      .cta-link:hover,
+      .primary-btn:hover,
+      .secondary-btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .primary-btn {
+        background: linear-gradient(180deg, #d7ad45, #c98f2b);
+        color: #1c180d;
+        border: none;
+        padding: 15px 26px;
+        min-width: 140px;
+        font-size: 15px;
+        box-shadow: 0 5px 16px rgba(181, 128, 20, 0.22);
+      }
+
+      .secondary-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        color: #fff;
+        padding: 15px 26px;
+        min-width: 150px;
+        font-size: 15px;
+      }
+
+      .hero {
+        position: relative;
+        min-height: 760px;
+        background-image:
+          linear-gradient(90deg, rgba(9, 12, 16, 0.72) 0%, rgba(12, 17, 20, 0.68) 28%, rgba(5, 8, 12, 0.58) 54%, rgba(7, 9, 12, 0.62) 100%),
+          url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=80');
+        background-size: cover;
+        background-position: center center;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .hero-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 64px 34px 54px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 52px;
+      }
+
+      .hero-copy {
+        flex: 1;
+        padding-top: 26px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid rgba(212, 169, 70, 0.8);
+        background: rgba(15, 23, 30, 0.42);
+        color: #f5d684;
+        border-radius: 999px;
+        padding: 8px 18px;
+        font-size: 13px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      .eyebrow .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--gold-soft);
+        box-shadow: 0 0 12px rgba(236, 197, 97, 0.9);
+      }
+
+      h1 {
+        margin: 28px 0 18px;
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 600;
+        font-size: clamp(4.2rem, 5vw, 8.4rem);
+        line-height: 0.86;
+        letter-spacing: -0.06em;
+        color: #f0efe9;
+      }
+
+      h1 .highlight {
+        color: #f0d08b;
+        display: inline-block;
+        font-style: normal;
+      }
+
+      .subtitle {
+        max-width: 660px;
+        color: rgba(255,255,255,0.8);
+        font-size: 20px;
+        line-height: 1.5;
+        margin-bottom: 26px;
+      }
+
+      .stats {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+        margin-bottom: 38px;
+      }
+
+      .stat {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #f0efe9;
+        font-size: 15px;
+        opacity: 0.95;
+      }
+
+      .stat .mini-icon {
+        color: var(--gold-soft);
+        font-size: 18px;
+      }
+
+      .btn-row {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .hero-card-wrap {
+        width: min(50vw, 700px);
+        display: flex;
+        justify-content: center;
+      }
+
+      .next-section {
+        background: #f3f0eb;
+        padding: 46px 30px 56px;
+        color: #1b1b1b;
+      }
+
+      .services-grid {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(220px, 1fr));
+        gap: 22px;
+      }
+
+      .service-card {
+        position: relative;
+        height: 250px;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 12px 28px rgba(25, 20, 15, 0.12);
+        background-size: cover;
+        background-position: center;
+      }
+
+      .service-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.52), rgba(0,0,0,0.08));
+      }
+
+      .service-card:nth-child(1) {
+        background-image: url('https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=900&q=80');
+      }
+
+      .service-card:nth-child(2) {
+        background-image: url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=80');
+      }
+
+      .service-card:nth-child(3) {
+        background-image: url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80');
+      }
+
+      .service-card:nth-child(4) {
+        background-image: url('https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=900&q=80');
+      }
+
+      .service-inner {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: 18px 18px 14px;
+      }
+
+      .service-title {
+        font-size: clamp(1.2rem, 2vw, 2rem);
+        font-weight: 600;
+        color: #f8f5f1;
+        font-family: 'Cormorant Garamond', serif;
+        letter-spacing: -0.03em;
+      }
+
+      .service-icon {
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.36);
+        font-size: 16px;
+        color: #f6d480;
+      }
+
+      .stats-wrap {
+        max-width: 1280px;
+        margin: 52px auto 0;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        gap: 30px;
+        text-align: center;
+      }
+
+      .stat-box {
+        padding: 8px 10px;
+      }
+
+      .stat-box .number {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(2.6rem, 3vw, 4.1rem);
+        line-height: 1;
+        color: #d9a93b;
+        font-weight: 600;
+        letter-spacing: -0.06em;
+      }
+
+      .stat-box .suffix {
+        font-style: italic;
+      }
+
+      .stat-box .label {
+        margin-top: 10px;
+        font-size: 12px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(27, 27, 27, 0.7);
+      }
+
+      .brand-strip {
+        max-width: 1280px;
+        margin: 42px auto 0;
+        text-align: center;
+      }
+
+      .brand-strip .heading {
+        color: rgba(27, 27, 27, 0.7);
+        font-size: 12px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        margin-bottom: 26px;
+      }
+
+      .brand-list {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 32px 48px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        color: rgba(27, 27, 27, 0.82);
+        font-size: clamp(1.1rem, 1.7vw, 1.7rem);
+        font-weight: 500;
+      }
+
+      .results-section {
+        background: #f3f0eb;
+        padding: 72px 30px 56px;
+      }
+
+      .cta-banner {
+        position: relative;
+        background: #0f1215;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 60px 20px;
+        overflow: hidden;
+      }
+
+      .cta-banner::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(255,255,255,0.03), transparent 55%);
+      }
+
+      .cta-content {
+        position: relative;
+        z-index: 1;
+        max-width: 980px;
+      }
+
+      .cta-content h3 {
+        margin: 0;
+        color: #f4f3f0;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(3.2rem, 5vw, 6.5rem);
+        line-height: 0.86;
+        letter-spacing: -0.06em;
+        font-weight: 600;
+      }
+
+      .cta-content .tagline {
+        margin: 26px 0 32px;
+        color: rgba(255,255,255,0.7);
+        font-size: 18px;
+        font-weight: 400;
+      }
+
+      .cta-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .gold-btn {
+        background: linear-gradient(180deg, #d7ad45, #c9922d);
+        color: #17130e;
+        border: none;
+        border-radius: 999px;
+        padding: 16px 30px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .dark-outline-btn {
+        background: rgba(255,255,255,0.02);
+        color: #f3f0eb;
+        border: 1px solid rgba(255,255,255,0.35);
+        border-radius: 999px;
+        padding: 16px 30px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .footer-wrap {
+        background: #f5f2ee;
+        color: #1b1a1a;
+        padding: 40px 30px 18px;
+      }
+
+      .footer-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1.8fr 1fr 1fr 1.2fr;
+        gap: 26px;
+        margin-bottom: 20px;
+      }
+
+      .brand-box {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(2rem, 2.3vw, 3.2rem);
+        font-weight: 700;
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+      }
+
+      .brand-box + p {
+        margin-top: 18px;
+        color: rgba(17,17,17,0.8);
+        line-height: 1.6;
+        font-size: 16px;
+        max-width: 360px;
+      }
+
+      .footer-column h4 {
+        margin: 0 0 18px;
+        font-size: 18px;
+        color: #1a1a1a;
+        font-weight: 600;
+      }
+
+      .footer-column ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 12px;
+      }
+
+      .footer-column li {
+        font-size: 17px;
+        color: rgba(17,17,17,0.82);
+      }
+
+      .contact-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 12px;
+      }
+
+      .contact-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(17,17,17,0.82);
+        font-size: 17px;
+      }
+
+      .contact-list .icon {
+        color: #d39d2c;
+        font-size: 18px;
+      }
+
+      .footer-bottom {
+        border-top: 1px solid rgba(0,0,0,0.08);
+        padding-top: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 15px;
+        color: rgba(17,17,17,0.7);
+      }
+
+      .footer-bottom .right {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .results-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 52px;
+      }
+
+      .results-copy {
+        flex: 1;
+        max-width: 560px;
+      }
+
+      .mini-label {
+        display: inline-block;
+        font-size: 15px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #d4a345;
+        font-weight: 700;
+        margin-bottom: 24px;
+      }
+
+      .results-copy h2 {
+        margin: 0 0 16px;
+        color: #111111;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(3.3rem, 5vw, 6rem);
+        line-height: 0.88;
+        letter-spacing: -0.06em;
+        font-weight: 600;
+      }
+
+      .results-copy p {
+        margin: 0;
+        color: rgba(17,17,17,0.8);
+        font-size: 18px;
+        line-height: 1.55;
+      }
+
+      .check-list {
+        list-style: none;
+        padding: 0;
+        margin: 24px 0 34px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .check-list li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: rgba(17,17,17,0.9);
+        font-size: 18px;
+      }
+
+      .check-list li::before {
+        content: "✓";
+        width: 20px;
+        height: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: #d4a345;
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      .results-actions {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .dark-btn {
+        background: #1b1b1b;
+        color: #f5f0ea;
+        border: none;
+        padding: 18px 26px;
+        border-radius: 999px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .text-btn {
+        background: transparent;
+        color: #1a1a1a;
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 10px 4px;
+      }
+
+      .results-visual {
+        flex: 1.1;
+        min-width: 0;
+      }
+
+      .image-frame {
+        width: 100%;
+        height: 520px;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 18px 32px rgba(33, 26, 18, 0.12);
+        background-image: url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80');
+        background-size: cover;
+        background-position: center;
+      }
+
+      .feature-card {
+        position: relative;
+        width: min(100%, 680px);
+        border-radius: 28px;
+        background: rgba(250, 247, 243, 0.12);
+        padding: 22px 22px 18px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+        border: 1px solid rgba(255,255,255,0.24);
+        backdrop-filter: blur(2px);
+      }
+
+      .feature-card .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 0 10px;
+      }
+
+      .feature-card .badge {
+        display: inline-block;
+        background: linear-gradient(180deg, #d8af45, #c3902c);
+        color: #1d1000;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        padding: 10px 18px;
+        text-transform: uppercase;
+      }
+
+      .feature-card .quote-btn {
+        background: rgba(13, 17, 23, 0.12);
+        color: #f5f1eb;
+        border: 1px solid rgba(255,255,255,0.7);
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .property-image {
+        position: relative;
+        height: 500px;
+        border-radius: 24px;
+        background-image:
+          linear-gradient(180deg, rgba(9, 12, 15, 0.22), rgba(10, 15, 18, 0.34)),
+          url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1200&q=80');
+        background-size: cover;
+        background-position: center center;
+        overflow: hidden;
+      }
+
+      .property-image::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0.14), rgba(0,0,0,0.28));
+      }
+
+      .property-caption {
+        position: absolute;
+        left: 28px;
+        right: 28px;
+        bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 14px;
+        z-index: 1;
+      }
+
+      .location {
+        color: rgba(255,255,255,0.8);
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+
+      .title {
+        font-size: clamp(1.5rem, 1.8vw, 2.4rem);
+        font-weight: 600;
+        color: #f7f5f0;
+        font-family: 'Cormorant Garamond', serif;
+        letter-spacing: -0.04em;
+      }
+
+      @media (max-width: 1100px) {
+        .hero-inner {
+          flex-direction: column;
+          align-items: flex-start;
+          padding-top: 44px;
+        }
+
+        .hero-card-wrap {
+          width: 100%;
+        }
+
+        .feature-card {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .contact-strip {
+          gap: 10px 16px;
+          font-size: 12px;
+        }
+
+        .nav {
+          flex-wrap: wrap;
+          justify-content: space-between;
+          padding: 14px 0;
+          min-height: auto;
+        }
+
+        .brand {
+          width: auto;
+          justify-content: flex-start;
+          font-size: 2rem;
+        }
+
+        .nav-menu {
+          display: none;
+          width: 100%;
+          order: 3;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 12px 0 6px;
+          background: rgba(255,255,255,0.96);
+          border-radius: 16px;
+          border: 1px solid rgba(17,17,17,0.08);
+          margin-top: 8px;
+        }
+
+        .nav-menu.open {
+          display: flex;
+        }
+
+        .nav-menu a {
+          width: 100%;
+          padding: 8px 14px;
+          font-size: 14px;
+        }
+
+        .nav-actions {
+          margin-left: auto;
+        }
+
+        .menu-toggle {
+          display: inline-flex;
+          flex-direction: column;
+        }
+
+        .nav-actions .cta-link {
+          display: none;
+        }
+
+        .hero {
+          min-height: auto;
+        }
+
+        .hero-inner {
+          padding: 32px 18px 32px;
+        }
+
+        .eyebrow {
+          font-size: 11px;
+          letter-spacing: 0.12em;
+        }
+
+        h1 {
+          font-size: clamp(3.4rem, 15vw, 5rem);
+        }
+
+        .subtitle {
+          font-size: 17px;
+        }
+
+        .stats {
+          gap: 14px 18px;
+        }
+
+        .property-image {
+          height: 360px;
+        }
+
+        .services-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .stats-wrap {
+          grid-template-columns: repeat(2, minmax(120px, 1fr));
+        }
+
+        .brand-list {
+          gap: 16px 22px;
+        }
+
+        .results-inner {
+          flex-direction: column;
+        }
+
+        .results-copy,
+        .results-visual {
+          width: 100%;
+          max-width: 100%;
+        }
+
+        .image-frame {
+          height: 420px;
+        }
+
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .cta-content h3 {
+          font-size: 3rem;
+        }
+      }
+      .nav-menu a {
+        position: relative;
+      }
+
+      .nav-menu a.active {
+        color: #d7a948;
+        opacity: 1;
+      }
+
+      .nav-menu a.active::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -10px;
+        height: 2px;
+        border-radius: 999px;
+        background: #d7a948;
+      }
+
+      .reveal-on-scroll {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+      }
+
+      .reveal-on-scroll.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        .reveal-on-scroll { opacity: 1; transform: none; transition: none; }
+      }
+
+      .claim,
+      .cta-link,
+      .primary-btn,
+      .secondary-btn,
+      .quote-btn,
+      .dark-btn,
+      .text-btn,
+      .gold-btn,
+      .dark-outline-btn {
+        text-decoration: none;
+      }
+
+            /* ===== Page Loader ===== */
+            .page-loader {
+              position: fixed;
+              inset: 0;
+              z-index: 9999;
+              background: radial-gradient(circle at 50% 42%, #141b24 0%, #0b0f14 70%);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              gap: 26px;
+              transition: opacity 0.55s ease, visibility 0.55s ease;
+            }
+      
+            .page-loader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+      
+            .loader-brand {
+              font-family: 'Cormorant Garamond', serif;
+              font-weight: 700;
+              font-size: clamp(2rem, 4vw, 3.2rem);
+              letter-spacing: -0.03em;
+              color: #f4efe7;
+              animation: loaderPulse 1.8s ease-in-out infinite;
+            }
+      
+            .loader-brand span { color: #d7a948; }
+      
+            .loader-orbit {
+              width: 74px;
+              height: 74px;
+              position: relative;
+            }
+      
+            .loader-orbit .ring {
+              position: absolute;
+              inset: 0;
+              border-radius: 50%;
+              border: 2px solid transparent;
+            }
+      
+            .loader-orbit .ring:nth-child(1) {
+              border-top-color: #d7a948;
+              border-right-color: rgba(215, 169, 72, 0.35);
+              animation: loaderSpin 1.1s linear infinite;
+            }
+      
+            .loader-orbit .ring:nth-child(2) {
+              inset: 12px;
+              border-bottom-color: #f4d38d;
+              border-left-color: rgba(244, 211, 141, 0.3);
+              animation: loaderSpin 1.5s linear infinite reverse;
+            }
+      
+            .loader-orbit .core {
+              position: absolute;
+              inset: 28px;
+              border-radius: 50%;
+              background: linear-gradient(180deg, #e0b64e, #c8922d);
+              box-shadow: 0 0 18px rgba(215, 169, 72, 0.65);
+              animation: loaderPulse 1.4s ease-in-out infinite;
+            }
+      
+            .loader-text {
+              color: rgba(244, 239, 231, 0.55);
+              font-size: 13px;
+              letter-spacing: 0.32em;
+              text-transform: uppercase;
+              font-weight: 600;
+            }
+      
+            .loader-bar {
+              width: min(240px, 60vw);
+              height: 3px;
+              border-radius: 999px;
+              background: rgba(255, 255, 255, 0.08);
+              overflow: hidden;
+            }
+      
+            .loader-bar i {
+              display: block;
+              height: 100%;
+              width: 40%;
+              border-radius: 999px;
+              background: linear-gradient(90deg, transparent, #d7a948, #f4d38d, transparent);
+              animation: loaderSlide 1.2s ease-in-out infinite;
+            }
+      
+            @keyframes loaderSpin { to { transform: rotate(360deg); } }
+            @keyframes loaderPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+            @keyframes loaderSlide { 0% { transform: translateX(-110%); } 100% { transform: translateX(320%); } }
+      
+            @media (prefers-reduced-motion: reduce) {
+              .loader-orbit .ring, .loader-orbit .core, .loader-brand, .loader-bar i { animation: none; }
+            }
+      
+            body.cms-loading { overflow: hidden; height: 100vh; }
+      
+    </style>
+  </head>
+  <body class="cms-loading">
+    <div class="page-loader" id="pageLoader">
+      <div class="loader-brand">Digital <span>World Solutions</span></div>
+      <div class="loader-orbit"><span class="ring"></span><span class="ring"></span><span class="core"></span></div>
+      <div class="loader-text">Loading Experience</div>
+      <div class="loader-bar"><i></i></div>
+    </div>
+
+    <div class="page-shell">
+      <div class="contact-strip">
+        <div class="contact-item"><span class="icon">◔</span><a href="tel:+14375599494">(437) 559-9494</a></div>
+        <div class="contact-item"><span class="icon">✉</span><a href="mailto:vansh.sharma2788@gmail.com">vansh.sharma2788@gmail.com</a></div>
+        <div class="contact-item"><span class="icon">◉</span><span>100% Guaranteed</span></div>
+        <div class="contact-item"><span class="icon">⏱</span><span>24-48 Hour Delivery</span></div>
+      </div>
+
+      <div class="nav-wrap">
+        <nav class="nav">
+          <div class="brand"><span>Digital <span style="color: #d7a948;">World Solutions</span></span></div>
+
+          <button class="menu-toggle" aria-label="Open menu" aria-expanded="false">
+            <span></span>
+          </button>
+
+          <div class="nav-menu" id="navMenu">
+            <a href="#top" class="active" aria-current="page">Home</a>
+            <a href="about.html">About</a>
+            <a href="portfolio.html">Portfolio</a>
+            <a href="services.html">Services</a>
+            <a href="packages.html">Packages</a>
+            <a href="contact.html">Contact</a>
+          </div>
+
+          <div class="nav-actions">
+            <a href="tel:+14375599494" class="cta-link">🗓 Check Availability</a>
+            <a href="packages.html" class="primary-btn">Book Now</a>
+          </div>
+        </nav>
+      </div>
+
+      <section class="hero" id="hero" data-cms-section="hero" data-cms-image="hero.backgroundImage">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <div class="eyebrow"><span class="dot"></span> <span data-cms="hero.eyebrow">#1 Real Estate Media in Ontario</span></div>
+            <h1 data-cms="hero.heading" data-cms-html>Real Estate <span class="highlight">Media</span> by<br />Digital World<br />Solutions</h1>
+
+            <p class="subtitle" data-cms="hero.subtitle">
+              Interior and exterior photos, floor plans, virtual tours, exterior cinematic video and virtual staging by Vansh Sharma.
+            </p>
+
+            <div class="stats">
+              <div class="stat"><span class="mini-icon">★</span><span data-cms="hero.stat1">24-hour turnaround</span></div>
+              <div class="stat"><span class="mini-icon">★</span><span data-cms="hero.stat2">500+ 5-star reviews</span></div>
+            </div>
+
+            <div class="btn-row">
+              <a href="tel:+14375599494" class="primary-btn" data-cms="hero.primaryBtn">Schedule Your Shoot →</a>
+              <a href="packages.html" class="secondary-btn" data-cms="hero.secondaryBtn">View Pricing</a>
+            </div>
+          </div>
+
+          <div class="hero-card-wrap">
+            <div class="feature-card">
+              <div class="header">
+                <span class="badge">Featured</span>
+                <a href="contact.html" class="quote-btn">Get Quote</a>
+              </div>
+
+              <div class="property-image" data-cms-image="hero.image">
+                <div class="property-caption">
+                  <div>
+                    <div class="location">Ancaster, Hamilton</div>
+                    <div class="title">Luxury Residential Real Estate</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="next-section" id="services" data-cms-section="services">
+        <div class="services-grid">
+          <div class="service-card" data-cms-image="services.card1.image"></div>
+          <div class="service-card" data-cms-image="services.card2.image"></div>
+          <div class="service-card" data-cms-image="services.card3.image"></div>
+          <div class="service-card" data-cms-image="services.card4.image"></div>
+        </div>
+
+        <div class="stats-wrap">
+          <div class="stat-box">
+            <div class="number" data-cms="services.stat1.number" data-cms-html>32<span class="suffix">%</span></div>
+            <div class="label" data-cms="services.stat1.label">Faster Sales</div>
+          </div>
+          <div class="stat-box">
+            <div class="number" data-cms="services.stat2.number" data-cms-html>4.9</div>
+            <div class="label" data-cms="services.stat2.label">Avg Rating</div>
+          </div>
+          <div class="stat-box">
+            <div class="number" data-cms="services.stat3.number" data-cms-html>800<span class="suffix">+</span></div>
+            <div class="label" data-cms="services.stat3.label">Agents Trust Us</div>
+          </div>
+          <div class="stat-box">
+            <div class="number" data-cms="services.stat4.number" data-cms-html>24<span class="suffix">hr</span></div>
+            <div class="label" data-cms="services.stat4.label">Turnaround</div>
+          </div>
+        </div>
+
+        <div class="brand-strip">
+          <div class="heading">Trusted by agents at</div>
+          <ul class="brand-list">
+            <li>RE/MAX</li>
+            <li>Keller Williams</li>
+            <li>Royal LePage</li>
+            <li>Century 21</li>
+            <li>Coldwell Banker</li>
+            <li>Exp Realty</li>
+            <li>Sotheby's</li>
+            <li>Compass</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="results-section" id="about" data-cms-section="about">
+        <div class="results-inner">
+          <div class="results-copy">
+            <div class="mini-label" data-cms="about.miniLabel">Why Digital World Solutions</div>
+            <h2 data-cms="about.heading">Built for realtors who want results</h2>
+            <p data-cms="about.body">
+              Every image is shot and edited by our in-house team. From staging tips on
+              arrival to next-day delivery, we make professional media effortless so your
+              listings stand out.
+            </p>
+
+            <ul class="check-list">
+              <li data-cms="about.check1">Guaranteed 24-48 hour delivery</li>
+              <li data-cms="about.check2">Same-day bookings available</li>
+              <li data-cms="about.check3">Full media suite under one roof</li>
+              <li data-cms="about.check4">100% satisfaction guarantee</li>
+            </ul>
+
+            <div class="results-actions">
+              <a href="services.html" class="dark-btn" data-cms="about.primaryBtn">Explore Services →</a>
+              <a href="portfolio.html" class="text-btn" data-cms="about.secondaryBtn">View Portfolio</a>
+            </div>
+          </div>
+
+          <div class="results-visual">
+            <div class="image-frame" aria-label="Luxury living room interior" data-cms-image="about.image"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-banner" id="packages" data-cms-section="cta">
+        <div class="cta-content">
+          <h3 data-cms="cta.heading">Ready to make your next listing unforgettable?</h3>
+          <div class="tagline" data-cms="cta.tagline">Book a shoot today and get 10% off your first session.</div>
+          <div class="cta-buttons">
+            <a href="tel:+14375599494" class="gold-btn" data-cms="cta.primaryBtn">Book Now</a>
+            <a href="packages.html" class="dark-outline-btn" data-cms="cta.secondaryBtn">See Packages</a>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer-wrap" id="contact">
+        <div class="footer-inner">
+          <div class="footer-grid">
+            <div>
+              <div class="brand-box">Digital <span style="color: #d7a948;">World Solutions</span></div>
+              <p>
+                Real estate photography and media by Vansh Sharma, available anywhere.
+              </p>
+            </div>
+
+            <div class="footer-column">
+              <h4>Explore</h4>
+              <ul>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="packages.html">Packages</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li></li>
+              </ul>
+            </div>
+
+            <div class="footer-column">
+              <h4>Company</h4>
+              <ul>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+              </ul>
+            </div>
+
+            <div class="footer-column">
+              <h4>Contact</h4>
+              <ul class="contact-list">
+                <li><span class="icon">☎</span><a href="tel:+14375599494">(437) 559-9494</a></li>
+                <li><span class="icon">✉</span><a href="mailto:vansh.sharma2788@gmail.com">vansh.sharma2788@gmail.com</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            <div>© 2025 Digital World Solutions. All rights reserved. Vansh Sharma.</div>
+            <div class="right">Edit Website</div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      const menuToggle = document.querySelector('.menu-toggle');
+      const navMenu = document.getElementById('navMenu');
+
+      if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', () => {
+          const isOpen = navMenu.classList.toggle('open');
+          menuToggle.classList.toggle('active', isOpen);
+          menuToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+      }
+    </script>
+    <script>
+      const revealItems = document.querySelectorAll('section, .service-card, .stat-box, .results-copy, .results-visual, .cta-banner, .footer-wrap');
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      revealItems.forEach((item) => {
+        item.classList.add('reveal-on-scroll');
+        revealObserver.observe(item);
+      });
+    </script>
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+      import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDEqeYpDojzrTswf0bSERit4ZWM3wCrFmM",
+        authDomain: "digital-world-solution.firebaseapp.com",
+        projectId: "digital-world-solution",
+        storageBucket: "digital-world-solution.firebasestorage.app",
+        messagingSenderId: "848219931323",
+        appId: "1:848219931323:web:a43a1f3ff68afa61029f9e"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      try {
+        const snap = await getDoc(doc(db, 'cms', 'home'));
+        if (snap.exists()) {
+          const data = snap.data();
+          document.querySelectorAll('[data-cms]').forEach((el) => {
+            const key = el.getAttribute('data-cms');
+            const value = data[key];
+            if (typeof value === 'string' && value.trim() !== '') {
+              if (el.hasAttribute('data-cms-html')) el.innerHTML = value;
+              else el.textContent = value;
+            }
+          });
+          document.querySelectorAll('[data-cms-image]').forEach((el) => {
+            const key = el.getAttribute('data-cms-image');
+            const value = data[key];
+            if (typeof value === 'string' && value.trim() !== '') {
+              const current = getComputedStyle(el).backgroundImage;
+              if (current && current.includes('linear-gradient')) {
+                el.style.backgroundImage = current.replace(/url\((['"]?)[^)]*\1\)/, 'url("' + value + '")');
+              } else {
+                el.style.backgroundImage = 'url("' + value + '")';
+              }
+            }
+          });
+
+          // saari CMS images preload karo, phir loader hatao
+          const cmsUrls = collectCmsImageUrls(data);
+          preloadImages(cmsUrls).then(() => hidePageLoader());
+        } else {
+          hidePageLoader();
+        }
+      } catch (err) {
+        console.warn('CMS content not loaded:', err);
+        hidePageLoader();
+      }
+
+      function collectCmsImageUrls(data) {
+        const urls = [];
+        Object.values(data).forEach((v) => {
+          if (typeof v === 'string' && (v.startsWith('http') || v.startsWith('data:image')) && /\.(jpe?g|png|webp|gif|avif|svg)([?#]|$)/i.test(v)) {
+            urls.push(v);
+          }
+        });
+        return urls;
+      }
+
+      function hidePageLoader() {
+        const loader = document.getElementById('pageLoader');
+        document.body.classList.remove('cms-loading');
+        if (loader && !loader.classList.contains('hide')) {
+          loader.classList.add('hide');
+          setTimeout(() => { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 700);
+        }
+      }
+
+      function preloadImages(urls) {
+        if (!urls.length) return Promise.resolve();
+        return Promise.all(urls.map((u) => new Promise((res) => {
+          const img = new Image();
+          img.onload = img.onerror = () => res();
+          img.src = u;
+        })));
+      }
+    </script>
+    <script>
+      // safety fallbacks — agar CMS module chale hi na
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          const loader = document.getElementById('pageLoader');
+          if (loader) { loader.classList.add('hide'); document.body.classList.remove('cms-loading'); }
+        }, 1200);
+      });
+      setTimeout(function () {
+        const loader = document.getElementById('pageLoader');
+        if (loader) { loader.classList.add('hide'); document.body.classList.remove('cms-loading'); }
+      }, 4000);
+    </script>
+    <script>
+      // Secret admin access: brand text par 16 clicks (2 sec ke andar har click)
+      (function () {
+        const brand = document.querySelector('.brand');
+        if (!brand) return;
+        let clicks = 0;
+        let timer = null;
+        brand.style.cursor = 'default';
+        brand.addEventListener('click', function (e) {
+          // normal links ka kaam na toote (brand ke andar links nahi hain, par safe side)
+          clicks++;
+          clearTimeout(timer);
+          timer = setTimeout(function () { clicks = 0; }, 2000);
+          if (clicks >= 16) {
+            clicks = 0;
+            clearTimeout(timer);
+            window.open('admin.html', '_blank');
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

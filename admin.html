@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin | Digital World Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --gold: #d7a948;
+        --gold-soft: #f4d38d;
+        --dark: #0d1116;
+        --dark-2: #111922;
+        --cream: #f5f2ed;
+        --text: #171717;
+        --muted: rgba(17, 17, 17, 0.72);
+        --border: rgba(17, 17, 17, 0.12);
+        --green: #1e8e3e;
+        --red: #d93025;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        background: var(--cream);
+        color: var(--text);
+      }
+
+      .admin-shell { min-height: 100vh; }
+
+      /* ===== Big top success popup ===== */
+      .save-toast {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: linear-gradient(180deg, #1fa04a, #178a3d);
+        color: #fff;
+        text-align: center;
+        padding: 26px 20px;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        box-shadow: 0 14px 34px rgba(23, 138, 61, 0.45);
+        transform: translateY(-110%);
+        transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+      }
+
+      .save-toast.show { transform: translateY(0); }
+      .save-toast .check {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.22);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+
+      .save-toast.sub { font-size: 15px; font-weight: 600; opacity: 0.92; display: block; margin-top: 6px; }
+      .save-toast.err { background: linear-gradient(180deg, #d93025, #b3261e); box-shadow: 0 14px 34px rgba(179, 38, 30, 0.45); }
+
+      /* ===== Password lock screen ===== */
+      .lock-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background: radial-gradient(circle at 50% 40%, #141b24 0%, #0b0f14 70%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .lock-screen.hide { display: none; }
+
+      .lock-card {
+        width: min(400px, 100%);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(215, 169, 72, 0.3);
+        border-radius: 24px;
+        padding: 38px 32px;
+        text-align: center;
+        backdrop-filter: blur(6px);
+      }
+
+      .lock-card .lock-ico {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, rgba(215, 169, 72, 0.25), rgba(215, 169, 72, 0.08));
+        border: 1px solid rgba(215, 169, 72, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+      }
+
+      .lock-card h1 {
+        margin: 0 0 8px;
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 700;
+        font-size: 2rem;
+        color: #f4efe7;
+      }
+
+      .lock-card h1 span { color: var(--gold); }
+      .lock-card p { margin: 0 0 24px; color: rgba(244, 239, 231, 0.6); font-size: 14px; }
+
+      .lock-card input {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #f4efe7;
+        padding: 14px 16px;
+        font: inherit;
+        font-size: 15px;
+        outline: none;
+        text-align: center;
+        letter-spacing: 0.06em;
+      }
+
+      .lock-card input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(215, 169, 73, 0.2); }
+      .lock-card input.err { border-color: var(--red); animation: lockShake 0.4s ease; }
+
+      @keyframes lockShake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-8px); }
+        75% { transform: translateX(8px); }
+      }
+
+      .lock-card button {
+        width: 100%;
+        margin-top: 14px;
+        border: 0;
+        border-radius: 999px;
+        padding: 14px 20px;
+        background: linear-gradient(180deg, #e0b64e, #c8922d);
+        color: #211605;
+        font-size: 15px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .lock-card button:hover { filter: brightness(1.06); }
+      .lock-card .lock-err { margin: 12px 0 0; color: #ff8a80; font-size: 13px; min-height: 18px; }
+
+      /* ===== Header ===== */
+      .admin-header {
+        background: var(--dark);
+        color: #f5f2ec;
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .admin-header .brand {
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 700;
+        font-size: 1.7rem;
+        letter-spacing: -0.04em;
+      }
+
+      .admin-header .brand span { color: var(--gold); }
+      .admin-header .meta { font-size: 13px; opacity: 0.85; display: inline-flex; align-items: center; gap: 8px; }
+      .admin-header .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 999px;
+        padding: 11px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+      }
+
+      .btn:hover { transform: translateY(-1px); }
+      .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+      .btn-gold { background: linear-gradient(180deg, #e0b64e, #c8922d); color: #211605; }
+      .btn-outline { background: transparent; color: #f5f2ec; border: 1px solid rgba(255, 255, 255, 0.4); }
+      .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+
+      .status-dot { width: 9px; height: 9px; border-radius: 50%; background: #f2b01e; display: inline-block; }
+      .status-dot.ok { background: #34a853; }
+      .status-dot.err { background: var(--red); }
+
+      /* ===== Layout with sidebar ===== */
+      .admin-body { display: flex; min-height: calc(100vh - 66px); }
+
+      .sidebar {
+        width: 236px;
+        flex-shrink: 0;
+        background: var(--dark-2);
+        color: #e8e4dc;
+        padding: 22px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .sidebar .side-label {
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(232, 228, 220, 0.5);
+        padding: 0 12px;
+        margin-bottom: 8px;
+      }
+
+      .side-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 12px;
+        border-radius: 12px;
+        color: rgba(232, 228, 220, 0.8);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 0;
+        background: transparent;
+        text-align: left;
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+
+      .side-link:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+
+      .side-link.active {
+        background: linear-gradient(90deg, rgba(215, 169, 72, 0.22), rgba(215, 169, 72, 0.08));
+        color: var(--gold-soft);
+      }
+
+      .side-link .ico { width: 20px; text-align: center; opacity: 0.9; }
+
+      .side-sep { height: 1px; background: rgba(255, 255, 255, 0.08); margin: 10px 6px; }
+
+      /* ===== Mobile sidebar toggle ===== */
+      .sidebar-toggle {
+        display: none;
+        width: 46px;
+        height: 46px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        cursor: pointer;
+        padding: 0;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .sidebar-toggle span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        border-radius: 2px;
+        background: #f5f2ec;
+        transition: transform 0.25s ease, opacity 0.2s ease;
+      }
+
+      .sidebar-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+      .sidebar-toggle.active span:nth-child(2) { opacity: 0; }
+      .sidebar-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+      .admin-main {
+        flex: 1;
+        min-width: 0;
+        max-width: 1000px;
+        padding: 26px 26px 70px;
+      }
+
+      /* ===== Section tabs inside page ===== */
+      .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+
+      .tab-btn {
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .tab-btn:hover { color: var(--text); }
+      .tab-btn.active { background: var(--dark); color: #f5f2ec; border-color: var(--dark); }
+
+      /* ===== Panels & cards ===== */
+      .page-panel { display: none; }
+      .page-panel.active { display: block; }
+      .sec-panel { display: none; }
+      .sec-panel.active { display: block; }
+
+      .panel-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 10px 24px rgba(17, 17, 17, 0.05);
+      }
+
+      .panel-card + .panel-card { margin-top: 20px; }
+
+      .panel-card h2 {
+        margin: 0 0 6px;
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 600;
+        font-size: 1.9rem;
+        letter-spacing: -0.04em;
+      }
+
+      .panel-card .hint { margin: 0 0 20px; color: var(--muted); font-size: 14px; }
+
+      .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      .field { display: grid; gap: 6px; align-content: start; }
+      .field.full { grid-column: 1 / -1; }
+      .field label { font-size: 13px; font-weight: 700; }
+      .field .tip { color: var(--muted); font-size: 12px; }
+
+      .field input[type="text"],
+      .field input[type="url"],
+      .field textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: #fbfaf8;
+        padding: 11px 14px;
+        font: inherit;
+        font-size: 14px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .field input:focus,
+      .field textarea:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(215, 169, 73, 0.16);
+      }
+
+      .field textarea { min-height: 90px; resize: vertical; }
+
+      /* ===== Image upload widget ===== */
+      .image-upload {
+        border: 1.5px dashed var(--border);
+        border-radius: 16px;
+        padding: 14px;
+        background: #fbfaf8;
+        display: grid;
+        gap: 10px;
+      }
+
+      .image-upload .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+      .image-upload .preview {
+        width: 100%;
+        height: 150px;
+        border-radius: 12px;
+        background-size: cover;
+        background-position: center;
+        background-color: #efece6;
+        border: 1px solid var(--border);
+        position: relative;
+      }
+
+      .image-upload .preview::after {
+        content: attr(data-label);
+        position: absolute;
+        inset: auto 10px 8px auto;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.95);
+        background: rgba(17, 17, 17, 0.55);
+        padding: 4px 10px;
+        border-radius: 999px;
+      }
+
+      .image-upload input[type="file"] { font-size: 13px; max-width: 280px; }
+      .upload-state { font-size: 13px; color: var(--muted); min-height: 18px; }
+      .upload-state.err { color: var(--red); }
+      .upload-state.ok { color: var(--green); }
+
+      .img-clear-btn {
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+
+      .img-clear-btn:hover { color: var(--text); }
+
+      /* ===== Upload progress bar ===== */
+      .save-progress { flex: 1; min-width: 220px; max-width: 420px; display: none; align-items: center; gap: 12px; }
+      .save-progress.show { display: flex; }
+      .progress-track { flex: 1; height: 10px; border-radius: 999px; background: rgba(17, 17, 17, 0.1); overflow: hidden; }
+      .progress-fill { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, #e0b64e, #c8922d); transition: width 0.25s ease; }
+      .progress-label { font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+
+      .save-bar { margin-top: 26px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+      .save-bar .note { font-size: 13px; color: var(--muted); }
+
+      /* ===== Gallery media manager ===== */
+      .gal-manager { margin-top: 6px; }
+      .gal-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+      .gal-tab {
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .gal-tab.active { background: var(--dark); color: #f5f2ec; border-color: var(--dark); }
+      .gal-upload-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+      .gal-upload-row input[type="file"] { font-size: 13px; }
+      .gal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 14px;
+      }
+      .gal-item {
+        position: relative;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: #efece6;
+        aspect-ratio: 1 / 1;
+      }
+      .gal-item img, .gal-item video {
+        width: 100%; height: 100%; object-fit: cover; display: block;
+      }
+      .gal-item .gal-type {
+        position: absolute; top: 8px; left: 8px;
+        font-size: 10px; font-weight: 800; letter-spacing: 0.06em;
+        text-transform: uppercase; color: #fff;
+        background: rgba(17,17,17,0.6); padding: 4px 8px; border-radius: 999px;
+      }
+      .gal-item .gal-del {
+        position: absolute; top: 8px; right: 8px;
+        width: 28px; height: 28px; border-radius: 50%;
+        border: 0; background: rgba(217,48,37,0.9); color: #fff;
+        font-size: 13px; cursor: pointer; line-height: 1;
+      }
+      .gal-item .gal-move {
+        position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+        display: flex; gap: 6px;
+      }
+      .gal-item .gal-move button {
+        width: 28px; height: 28px; border-radius: 50%; border: 0;
+        background: rgba(17,17,17,0.75); color: #fff; cursor: pointer; font-size: 13px;
+      }
+      .gal-item.new-item { outline: 2px solid var(--gold); }
+      .project-folder-form { display: grid; gap: 16px; }
+      .project-folder-form label { display: grid; gap: 8px; font-size: 14px; font-weight: 700; }
+      .project-folder-form input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: #fff; font: inherit; }
+      .project-folder-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; margin-top: 20px; }
+      .project-folder-item { overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+      .project-folder-item img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: #efece6; }
+      .project-folder-item .details { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px; }
+      .project-folder-item strong { overflow-wrap: anywhere; }
+      .project-folder-item button { flex: 0 0 auto; border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; background: #fff; color: var(--red); cursor: pointer; }
+
+      @media (max-width: 900px) {
+        .admin-header { padding: 12px 14px; }
+        .sidebar-toggle { display: inline-flex; }
+
+        .admin-body { flex-direction: column; }
+
+        .sidebar {
+          width: 100%;
+          flex-direction: column;
+          padding: 10px 14px;
+          gap: 4px;
+          order: -1;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar .side-label { display: none; }
+        .side-sep { display: none; }
+        .sidebar .side-link { display: none; }
+
+        .sidebar.open .side-link { display: flex; }
+
+        .admin-main { padding: 18px 12px 60px; }
+        .form-grid { grid-template-columns: 1fr; }
+        .panel-card { padding: 18px 14px; }
+        .panel-card h2 { font-size: 1.5rem; }
+        .tabs { gap: 6px; margin-bottom: 16px; }
+        .tab-btn { padding: 8px 14px; font-size: 12px; }
+        .save-toast { font-size: 16px; padding: 18px 14px; text-align: center; }
+        .save-progress { min-width: 140px; }
+        .save-bar { flex-direction: column; align-items: stretch; }
+        .save-bar .btn { width: 100%; justify-content: center; }
+        .image-upload .row { flex-direction: column; align-items: stretch; }
+        .image-upload input[type="file"] { max-width: none; }
+      }
+
+      @media (max-width: 480px) {
+        .admin-header .brand { font-size: 1.3rem; }
+        .admin-header .actions { gap: 6px; }
+        .admin-header .btn { padding: 9px 14px; font-size: 12px; }
+        .admin-header .meta { display: none; }
+        .lock-card { padding: 28px 20px; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Password Lock -->
+    <div class="lock-screen" id="lockScreen">
+      <div class="lock-card">
+        <div class="lock-ico">🔒</div>
+        <h1>Digital <span>World Solutions</span></h1>
+        <p>Admin Panel — password daalo</p>
+        <input type="password" id="lockPass" placeholder="Password" autocomplete="current-password" />
+        <button type="button" id="lockBtn">Unlock Admin</button>
+        <p class="lock-err" id="lockErr"></p>
+      </div>
+    </div>
+
+    <!-- Big green success popup -->
+    <div class="save-toast" id="saveToast">
+      <span class="check">✓</span>
+      <span>Saved Successfully!<span class="sub" id="saveToastSub">Website par live ho gaya hai</span></span>
+    </div>
+
+    <div class="admin-shell">
+      <header class="admin-header">
+        <div class="brand">Digital <span>World Solutions</span> <small style="font-size: 0.55em; opacity: .6;">Admin</small></div>
+        <div class="actions">
+          <span class="meta"><span id="dbStatus" class="status-dot"></span><span id="dbStatusText">Connecting…</span></span>
+          <button id="reloadBtn" class="btn btn-ghost" type="button">⟳ Load Saved</button>
+          <button id="saveAllBtn" class="btn btn-gold" type="button">💾 Save Changes</button>
+          <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+        </div>
+      </header>
+
+      <div class="admin-body">
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+          <div class="side-label">Pages</div>
+          <button class="side-link active" data-page="home" type="button"><span class="ico">🏠</span> Home</button>
+          <button class="side-link" data-page="about" type="button"><span class="ico">👤</span> About</button>
+          <button class="side-link" data-page="services" type="button"><span class="ico">🛠️</span> Services</button>
+          <button class="side-link" data-page="packages" type="button"><span class="ico">💰</span> Packages</button>
+          <button class="side-link" data-page="portfolio" type="button"><span class="ico">🖼️</span> Portfolio</button>
+          <button class="side-link" data-page="imageFolders" type="button"><span class="ico">📁</span> Image Folder</button>
+          <button class="side-link" data-page="contact" type="button"><span class="ico">📞</span> Contact</button>
+          <div class="side-sep"></div>
+          <div class="side-label">Quick View</div>
+          <a class="side-link" href="index.html" target="_blank"><span class="ico">↗</span> index.html</a>
+        </aside>
+
+        <!-- ===== MAIN ===== -->
+        <main class="admin-main">
+          <div id="pageHost"></div>
+
+          <div class="save-bar">
+            <button id="saveAllBtn2" class="btn btn-gold" type="button">💾 Save Changes</button>
+            <div class="save-progress" id="saveProgress">
+              <div class="progress-track"><div class="progress-fill" id="saveProgressFill"></div></div>
+              <span class="progress-label" id="saveProgressLabel">Uploading…</span>
+            </div>
+            <span class="note">Firestore: <code>cms/home</code>, <code>cms/about</code>, <code>cms/services</code>, <code>cms/packages</code>, <code>cms/portfolio</code>, <code>cms/contact</code></span>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script type="module">
+      // ===== Password gate — page control me aane se pehle hi check =====
+      (function () {
+        const HASH = '11d83792634d532ff5c95371860e6c059ecde56b'; // SHA-1 of the admin password
+
+        async function sha1(msg) {
+          const bytes = new TextEncoder().encode(msg);
+          const buf = await crypto.subtle.digest('SHA-1', bytes);
+          return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function unlockUI() {
+          document.getElementById('lockScreen').classList.add('hide');
+          document.body.classList.remove('lock-pending');
+        }
+
+        async function tryUnlock() {
+          const input = document.getElementById('lockPass');
+          const err = document.getElementById('lockErr');
+          const hash = await sha1(input.value);
+          if (hash === HASH) {
+            sessionStorage.setItem('dws_admin_ok', '1');
+            unlockUI();
+            window.__dwsLock.fireUnlocked(); // admin ab bina refresh load ho jayega
+          } else {
+            err.textContent = 'Galat password — dobara try karo';
+            input.classList.add('err');
+            setTimeout(() => input.classList.remove('err'), 500);
+            input.value = '';
+            input.focus();
+          }
+        }
+
+        window.__dwsLock = {
+          onUnlocks: [],
+          isUnlocked: () => sessionStorage.getItem('dws_admin_ok') === '1',
+          onUnlock(fn) {
+            if (this.isUnlocked()) fn();
+            else this.onUnlocks.push(fn);
+          },
+          fireUnlocked() {
+            this.onUnlocks.forEach((fn) => { try { fn(); } catch (e) { console.error(e); } });
+            this.onUnlocks = [];
+          }
+        };
+
+        window.__dwsInitAdmin = function () {
+          const screen = document.getElementById('lockScreen');
+          document.getElementById('lockBtn').addEventListener('click', tryUnlock);
+          document.getElementById('lockPass').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') tryUnlock();
+          });
+          if (window.__dwsLock.isUnlocked()) {
+            unlockUI();
+          } else {
+            document.body.classList.add('lock-pending');
+            screen.classList.remove('hide');
+          }
+        };
+      })();
+
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+      import {
+        getFirestore, doc, getDoc, setDoc
+      } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDEqeYpDojzrTswf0bSERit4ZWM3wCrFmM",
+        authDomain: "digital-world-solution.firebaseapp.com",
+        projectId: "digital-world-solution",
+        storageBucket: "digital-world-solution.firebasestorage.app",
+        messagingSenderId: "848219931323",
+        appId: "1:848219931323:web:a43a1f3ff68afa61029f9e"
+      };
+
+      const CLOUD_NAME = "bhi9utno";
+      const UPLOAD_PRESET = "bzkz8ud7"; // unsigned preset
+      const CLOUDINARY_API_KEY = "465146532354228"; // nayi key
+      const CLOUDINARY_API_SECRET = "E4Qm3Fmp5jS-1N8j_gwkT_5RmC8"; // old-image auto-cleanup ke liye
+
+      // Firestore doc me bhejne se pehle sentinel values ko empty string bana do
+      function cleanDoc(obj) {
+        const out = {};
+        Object.keys(obj).forEach((k) => { out[k] = obj[k] === '__DELETED__' ? '' : obj[k]; });
+        return out;
+      }
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      const PAGES = ['home', 'about', 'services', 'packages', 'portfolio', 'contact'];
+
+      // =====================================================================
+      // FIELD SCHEMA — har page ke sections aur unke editable fields
+      // t: text, ta: textarea (html allowed via h flag), img: image upload
+      // =====================================================================
+      const SCHEMA = {
+        home: {
+          label: 'Home',
+          sections: [
+            { id: 'hero', name: 'Hero', card: 'Hero Section', hint: 'Home page ka sabse upar wala bada section.', fields: [
+              { k: 'hero.eyebrow', t: 't', l: 'Eyebrow / Badge Line' },
+              { k: 'hero.heading', t: 'ta', l: 'Main Heading (HTML allowed)', h: true },
+              { k: 'hero.subtitle', t: 'ta', l: 'Subtitle' },
+              { k: 'hero.stat1', t: 't', l: 'Stat 1 (star line)' },
+              { k: 'hero.stat2', t: 't', l: 'Stat 2 (star line)' },
+              { k: 'hero.primaryBtn', t: 't', l: 'Primary Button Text' },
+              { k: 'hero.secondaryBtn', t: 't', l: 'Secondary Button Text' },
+              { k: 'hero.image', t: 'img', l: 'Featured Card Image' },
+              { k: 'hero.backgroundImage', t: 'img', l: 'Hero Background' }
+            ]},
+            { id: 'services', name: 'Services & Stats', card: 'Services Grid + Stats Row', hint: '4 service cards aur niche gold stats.', fields: [
+              { k: 'services.card1.title', t: 't', l: 'Card 1 Title' },
+              { k: 'services.card1.image', t: 'img', l: 'Card 1 Image' },
+              { k: 'services.card2.title', t: 't', l: 'Card 2 Title' },
+              { k: 'services.card2.image', t: 'img', l: 'Card 2 Image' },
+              { k: 'services.card3.title', t: 't', l: 'Card 3 Title' },
+              { k: 'services.card3.image', t: 'img', l: 'Card 3 Image' },
+              { k: 'services.card4.title', t: 't', l: 'Card 4 Title' },
+              { k: 'services.card4.image', t: 'img', l: 'Card 4 Image' },
+              { k: 'services.stat1.number', t: 't', l: 'Stat 1 Number (HTML ok)', h: true },
+              { k: 'services.stat1.label', t: 't', l: 'Stat 1 Label' },
+              { k: 'services.stat2.number', t: 't', l: 'Stat 2 Number (HTML ok)', h: true },
+              { k: 'services.stat2.label', t: 't', l: 'Stat 2 Label' },
+              { k: 'services.stat3.number', t: 't', l: 'Stat 3 Number (HTML ok)', h: true },
+              { k: 'services.stat3.label', t: 't', l: 'Stat 3 Label' },
+              { k: 'services.stat4.number', t: 't', l: 'Stat 4 Number (HTML ok)', h: true },
+              { k: 'services.stat4.label', t: 't', l: 'Stat 4 Label' }
+            ]},
+            { id: 'about', name: 'Why Us', card: 'Why Us Section', hint: '"Built for realtors" wala section.', fields: [
+              { k: 'about.miniLabel', t: 't', l: 'Mini Label' },
+              { k: 'about.heading', t: 't', l: 'Heading' },
+              { k: 'about.body', t: 'ta', l: 'Body Text' },
+              { k: 'about.check1', t: 't', l: 'Checklist Item 1' },
+              { k: 'about.check2', t: 't', l: 'Checklist Item 2' },
+              { k: 'about.check3', t: 't', l: 'Checklist Item 3' },
+              { k: 'about.check4', t: 't', l: 'Checklist Item 4' },
+              { k: 'about.primaryBtn', t: 't', l: 'Primary Button Text' },
+              { k: 'about.secondaryBtn', t: 't', l: 'Secondary Button Text' },
+              { k: 'about.image', t: 'img', l: 'About Image' }
+            ]},
+            { id: 'cta', name: 'CTA Banner', card: 'CTA Banner', hint: 'Dark "Ready to make your next listing" banner.', fields: [
+              { k: 'cta.heading', t: 'ta', l: 'Heading' },
+              { k: 'cta.tagline', t: 't', l: 'Tagline' },
+              { k: 'cta.primaryBtn', t: 't', l: 'Primary Button Text' },
+              { k: 'cta.secondaryBtn', t: 't', l: 'Secondary Button Text' }
+            ]}
+          ]
+        },
+
+        about: {
+          label: 'About',
+          sections: [
+            { id: 'hero', name: 'Hero', card: 'About Hero', hint: 'About page ka top hero.', fields: [
+              { k: 'hero.label', t: 't', l: 'Small Label' },
+              { k: 'hero.pill', t: 't', l: 'Pill Text' },
+              { k: 'hero.heading', t: 't', l: 'Heading' },
+              { k: 'hero.subtitle', t: 'ta', l: 'Subtitle' },
+              { k: 'hero.backgroundImage', t: 'img', l: 'Hero Background' }
+            ]},
+            { id: 'intro', name: 'Intro & Stats', card: 'Intro & Stats', hint: '"Real estate media by Vansh Sharma" section.', fields: [
+              { k: 'intro.heading', t: 't', l: 'Heading' },
+              { k: 'intro.p1', t: 'ta', l: 'Paragraph 1' },
+              { k: 'intro.p2', t: 'ta', l: 'Paragraph 2' },
+              { k: 'intro.stat1', t: 't', l: 'Stat 1 Number (HTML ok)', h: true },
+              { k: 'intro.stat1Label', t: 't', l: 'Stat 1 Label' },
+              { k: 'intro.stat2', t: 't', l: 'Stat 2 Number (HTML ok)', h: true },
+              { k: 'intro.stat2Label', t: 't', l: 'Stat 2 Label' },
+              { k: 'intro.stat3', t: 't', l: 'Stat 3 Number (HTML ok)', h: true },
+              { k: 'intro.stat3Label', t: 't', l: 'Stat 3 Label' },
+              { k: 'intro.stat4', t: 't', l: 'Stat 4 Number (HTML ok)', h: true },
+              { k: 'intro.stat4Label', t: 't', l: 'Stat 4 Label' },
+              { k: 'intro.image', t: 'img', l: 'Intro Image' }
+            ]},
+            { id: 'quote', name: 'Quote', card: 'Quote Strip', hint: 'Badi quote wali line.', fields: [
+              { k: 'quote.text', t: 'ta', l: 'Quote Text' }
+            ]},
+            { id: 'values', name: 'Core Values', card: 'Core Values', hint: '6 value cards.', fields: [
+              { k: 'values.eyebrow', t: 't', l: 'Eyebrow' },
+              { k: 'values.heading', t: 't', l: 'Heading' },
+              { k: 'values.subtitle', t: 'ta', l: 'Subtitle' },
+              { k: 'values.card1.title', t: 't', l: 'Card 1 Title' },
+              { k: 'values.card1.body', t: 'ta', l: 'Card 1 Text' },
+              { k: 'values.card2.title', t: 't', l: 'Card 2 Title' },
+              { k: 'values.card2.body', t: 'ta', l: 'Card 2 Text' },
+              { k: 'values.card3.title', t: 't', l: 'Card 3 Title' },
+              { k: 'values.card3.body', t: 'ta', l: 'Card 3 Text' },
+              { k: 'values.card4.title', t: 't', l: 'Card 4 Title' },
+              { k: 'values.card4.body', t: 'ta', l: 'Card 4 Text' },
+              { k: 'values.card5.title', t: 't', l: 'Card 5 Title' },
+              { k: 'values.card5.body', t: 'ta', l: 'Card 5 Text' },
+              { k: 'values.card6.title', t: 't', l: 'Card 6 Title' },
+              { k: 'values.card6.body', t: 'ta', l: 'Card 6 Text' }
+            ]},
+            { id: 'process', name: 'Process', card: 'Our Process', hint: '5 step process.', fields: [
+              { k: 'process.eyebrow', t: 't', l: 'Eyebrow' },
+              { k: 'process.heading', t: 't', l: 'Heading' },
+              { k: 'process.subtitle', t: 'ta', l: 'Subtitle' },
+              { k: 'process.step1.title', t: 't', l: 'Step 1 Title' },
+              { k: 'process.step1.body', t: 'ta', l: 'Step 1 Text' },
+              { k: 'process.step2.title', t: 't', l: 'Step 2 Title' },
+              { k: 'process.step2.body', t: 'ta', l: 'Step 2 Text' },
+              { k: 'process.step3.title', t: 't', l: 'Step 3 Title' },
+              { k: 'process.step3.body', t: 'ta', l: 'Step 3 Text' },
+              { k: 'process.step4.title', t: 't', l: 'Step 4 Title' },
+              { k: 'process.step4.body', t: 'ta', l: 'Step 4 Text' },
+              { k: 'process.step5.title', t: 't', l: 'Step 5 Title' },
+              { k: 'process.step5.body', t: 'ta', l: 'Step 5 Text' }
+            ]},
+            { id: 'cta', name: 'CTA Banner', card: 'CTA Banner', hint: '"Not happy? We will reshoot" banner.', fields: [
+              { k: 'cta.badge', t: 't', l: 'Badge Text' },
+              { k: 'cta.heading', t: 't', l: 'Heading' },
+              { k: 'cta.body', t: 'ta', l: 'Body Text' },
+              { k: 'cta.primaryBtn', t: 't', l: 'Primary Button Text' },
+              { k: 'cta.secondaryBtn', t: 't', l: 'Secondary Button Text' }
+            ]}
+          ]
+        },
+
+        services: {
+          label: 'Services',
+          sections: [
+            { id: 'hero', name: 'Hero', card: 'Services Hero', hint: 'Page ka top hero.', fields: [
+              { k: 'hero.heading', t: 't', l: 'Heading' },
+              { k: 'hero.subtitle', t: 'ta', l: 'Subtitle' },
+              { k: 'hero.pill1', t: 't', l: 'Pill 1' },
+              { k: 'hero.pill2', t: 't', l: 'Pill 2' },
+              { k: 'hero.pill3', t: 't', l: 'Pill 3' },
+              { k: 'hero.pill4', t: 't', l: 'Pill 4' },
+              { k: 'hero.pill5', t: 't', l: 'Pill 5' },
+              { k: 'hero.backgroundImage', t: 'img', l: 'Hero Background' }
+            ]},
+            { id: 'cta', name: 'Bottom CTA', card: 'Bottom CTA Button', hint: 'Gallery ke upar "View Our Packages" button ka text.', fields: [
+              { k: 'cta.text', t: 't', l: 'CTA Button Text' }
+            ]}
+          ]
+        },
+
+        packages: {
+          label: 'Packages',
+          sections: [
+            { id: 'hero', name: 'Hero', card: 'Packages Hero', hint: 'Page ka top hero.', fields: [
+              { k: 'hero.label', t: 't', l: 'Small Label' },
+              { k: 'hero.heading', t: 't', l: 'Heading' },
+              { k: 'hero.subtitle', t: 'ta', l: 'Subtitle' },
+              { k: 'hero.pill1', t: 't', l: 'Pill 1' },
+              { k: 'hero.pill2', t: 't', l: 'Pill 2' },
+              { k: 'hero.pill3', t: 't', l: 'Pill 3' },
+              { k: 'hero.pill4', t: 't', l: 'Pill 4' },
+              { k: 'hero.pill5', t: 't', l: 'Pill 5' },
+              { k: 'hero.backgroundImage', t: 'img', l: 'Hero Background' }
+            ]},
+            { id: 'grid', name: 'Packages', card: 'Package Cards', hint: 'Card titles/descriptions. Prices ke liye "Pricing Table" tab dekho — size tab select karne par saare card prices change hote hain.', fields: [
+              { k: 'grid.label', t: 't', l: 'Section Label' },
+              { k: 'grid.heading', t: 't', l: 'Section Heading' },
+              { k: 'grid.subtitle', t: 'ta', l: 'Section Subtitle' },
+              { k: 'pkg-basic.title', t: 't', l: 'Basic Title' },
+              { k: 'pkg-basic.description', t: 't', l: 'Basic Description' },
+              { k: 'pkg-standard.title', t: 't', l: 'Standard Title' },
+              { k: 'pkg-standard.description', t: 't', l: 'Standard Description' },
+              { k: 'pkg-pro.title', t: 't', l: 'Pro Title' },
+              { k: 'pkg-pro.description', t: 't', l: 'Pro Description' },
+              { k: 'pkg-basicplus.title', t: 't', l: 'Basic+ Title' },
+              { k: 'pkg-basicplus.description', t: 't', l: 'Basic+ Description' },
+              { k: 'note.text', t: 'ta', l: 'Bottom Note' }
+            ]},
+            { id: 'pricing', name: 'Pricing Table', card: 'Size-wise Pricing Table', hint: 'Har card × har size-range ka price. Khali = site default. "Contact for Pricing" ke liye "Contact" likho (sirf 10,000+ sq ft).', fields: [
+              { k: 'pricing_basic_s1', t: 't', l: 'Basic — Up to 1,500 sq ft' },
+              { k: 'pricing_basic_s2', t: 't', l: 'Basic — 1,501–2,500 sq ft' },
+              { k: 'pricing_basic_s3', t: 't', l: 'Basic — 2,500–4,500 sq ft' },
+              { k: 'pricing_basic_s4', t: 't', l: 'Basic — 4,500–9,999 sq ft' },
+              { k: 'pricing_basic_s5', t: 't', l: 'Basic — 10,000+ sq ft' },
+              { k: 'pricing_standard_s1', t: 't', l: 'Standard — Up to 1,500 sq ft' },
+              { k: 'pricing_standard_s2', t: 't', l: 'Standard — 1,501–2,500 sq ft' },
+              { k: 'pricing_standard_s3', t: 't', l: 'Standard — 2,500–4,500 sq ft' },
+              { k: 'pricing_standard_s4', t: 't', l: 'Standard — 4,500–9,999 sq ft' },
+              { k: 'pricing_standard_s5', t: 't', l: 'Standard — 10,000+ sq ft' },
+              { k: 'pricing_pro_s1', t: 't', l: 'Pro — Up to 1,500 sq ft' },
+              { k: 'pricing_pro_s2', t: 't', l: 'Pro — 1,501–2,500 sq ft' },
+              { k: 'pricing_pro_s3', t: 't', l: 'Pro — 2,500–4,500 sq ft' },
+              { k: 'pricing_pro_s4', t: 't', l: 'Pro — 4,500–9,999 sq ft' },
+              { k: 'pricing_pro_s5', t: 't', l: 'Pro — 10,000+ sq ft' },
+              { k: 'pricing_basicplus_s1', t: 't', l: 'Basic+ — Up to 1,500 sq ft' },
+              { k: 'pricing_basicplus_s2', t: 't', l: 'Basic+ — 1,501–2,500 sq ft' },
+              { k: 'pricing_basicplus_s3', t: 't', l: 'Basic+ — 2,500–4,500 sq ft' },
+              { k: 'pricing_basicplus_s4', t: 't', l: 'Basic+ — 4,500–9,999 sq ft' },
+              { k: 'pricing_basicplus_s5', t: 't', l: 'Basic+ — 10,000+ sq ft' }
+            ]},
+            { id: 'promo', name: 'Promo & Compare', card: 'Promo Banner + Compare Button', hint: 'Package grid ke upar orange 10% OFF banner aur Compare All Features button ka text.', fields: [
+              { k: 'promo.heading', t: 't', l: 'Promo Heading' },
+              { k: 'promo.sub', t: 't', l: 'Promo Sub Text' },
+              { k: 'compare.text', t: 't', l: 'Compare Button Text' }
+            ]}
+          ]
+        },
+
+        portfolio: {
+          label: 'Portfolio',
+          sections: [
+            { id: 'hero', name: 'Hero', card: 'Portfolio Hero', hint: 'Page ka top hero.', fields: [
+              { k: 'hero.label', t: 't', l: 'Small Label' },
+              { k: 'hero.heading', t: 't', l: 'Heading' },
+              { k: 'hero.subtitle', t: 'ta', l: 'Subtitle' },
+              { k: 'hero.stat1', t: 't', l: 'Stat Pill 1' },
+              { k: 'hero.stat2', t: 't', l: 'Stat Pill 2' },
+              { k: 'hero.stat3', t: 't', l: 'Stat Pill 3' },
+              { k: 'hero.stat4', t: 't', l: 'Stat Pill 4' },
+              { k: 'hero.backgroundImage', t: 'img', l: 'Hero Background' }
+            ]},
+            { id: 'gallery', name: 'Gallery', card: 'Gallery (Media)', hint: 'Images aur videos alag-alag upload karo — multi-select supported. Yeh items portfolio aur services dono pages par dikhenge.', gallery: true, fields: [
+              { k: 'gallery.heading', t: 't', l: 'Gallery Heading' },
+              { k: 'gallery.subtitle', t: 'ta', l: 'Gallery Subtitle' }
+            ]}
+          ]
+        },
+
+        contact: {
+          label: 'Contact',
+          sections: [
+            { id: 'hero', name: 'Banner', card: 'Contact Banner', hint: 'Contact page ke top banner ki background image.', fields: [
+              { k: 'hero.backgroundImage', t: 'img', l: 'Banner Background Image' }
+            ]}
+          ]
+        }
+      };
+
+      // ===== DEFAULTS — site ke current texts (inputs pre-filled) =====
+      const D = {};
+      D['home:hero.eyebrow'] = '#1 Real Estate Media in Ontario';
+      D['home:hero.heading'] = 'Real Estate <span class="highlight">Media</span> by<br />Digital World<br />Solutions';
+      D['home:hero.subtitle'] = 'Interior and exterior photos, floor plans, virtual tours, exterior cinematic video and virtual staging by Vansh Sharma.';
+      D['home:hero.stat1'] = '24-hour turnaround';
+      D['home:hero.stat2'] = '500+ 5-star reviews';
+      D['home:hero.primaryBtn'] = 'Schedule Your Shoot →';
+      D['home:hero.secondaryBtn'] = 'View Pricing';
+      D['home:hero.image'] = 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1200&q=80';
+      D['home:hero.backgroundImage'] = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=80';
+      D['home:services.card1.title'] = 'Interior & Exterior Photos';
+      D['home:services.card1.image'] = 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=900&q=80';
+      D['home:services.card2.title'] = 'Exterior Cinematic Video';
+      D['home:services.card2.image'] = 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=80';
+      D['home:services.card3.title'] = '2D & 3D Floor Plans';
+      D['home:services.card3.image'] = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80';
+      D['home:services.card4.title'] = 'Virtual Tours';
+      D['home:services.card4.image'] = 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=900&q=80';
+      D['home:services.stat1.number'] = '32<span class="suffix">%</span>';
+      D['home:services.stat1.label'] = 'Faster Sales';
+      D['home:services.stat2.number'] = '4.9';
+      D['home:services.stat2.label'] = 'Avg Rating';
+      D['home:services.stat3.number'] = '800<span class="suffix">+</span>';
+      D['home:services.stat3.label'] = 'Agents Trust Us';
+      D['home:services.stat4.number'] = '24<span class="suffix">hr</span>';
+      D['home:services.stat4.label'] = 'Turnaround';
+      D['home:about.miniLabel'] = 'Why Digital World Solutions';
+      D['home:about.heading'] = 'Built for realtors who want results';
+      D['home:about.body'] = 'Every image is shot and edited by our in-house team. From staging tips on arrival to next-day delivery, we make professional media effortless so your listings stand out.';
+      D['home:about.check1'] = 'Guaranteed 24-48 hour delivery';
+      D['home:about.check2'] = 'Same-day bookings available';
+      D['home:about.check3'] = 'Full media suite under one roof';
+      D['home:about.check4'] = '100% satisfaction guarantee';
+      D['home:about.primaryBtn'] = 'Explore Services →';
+      D['home:about.secondaryBtn'] = 'View Portfolio';
+      D['home:about.image'] = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80';
+      D['home:cta.heading'] = 'Ready to make your next listing unforgettable?';
+      D['home:cta.tagline'] = 'Book a shoot today and get 10% off your first session.';
+      D['home:cta.primaryBtn'] = 'Book Now';
+      D['home:cta.secondaryBtn'] = 'See Packages';
+
+      D['about:hero.label'] = 'VANSH SHARMA';
+      D['about:hero.heading'] = 'About Digital World Solutions';
+      D['about:hero.subtitle'] = 'Professional real estate photography and media by Vansh Sharma, available anywhere.';
+      D['about:hero.pill'] = 'Available Anywhere';
+      D['about:hero.backgroundImage'] = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=80';
+      D['about:intro.heading'] = 'Real estate media by Vansh Sharma';
+      D['about:intro.p1'] = 'Digital World Solutions helps realtors and property owners present listings with polished, professional visuals. Every project is led by Vansh Sharma with responsive, personable service.';
+      D['about:intro.p2'] = 'We make professional real estate media simple, polished and available anywhere. Services include interior and exterior photos, 2D and 3D floor plans, virtual tours, exterior cinematic videos and virtual staging.';
+      D['about:intro.stat1'] = '5000<span style="font-size: 0.7em; vertical-align: super;">+</span>';
+      D['about:intro.stat1Label'] = 'Properties Shot';
+      D['about:intro.stat2'] = '15<span style="font-size: 0.7em; vertical-align: super;">-</span>';
+      D['about:intro.stat2Label'] = 'Industry Awards';
+      D['about:intro.stat3'] = '8<span style="font-size: 0.7em; vertical-align: super;">+</span>';
+      D['about:intro.stat3Label'] = 'Years Experience';
+      D['about:intro.stat4'] = '200<span style="font-size: 0.7em; vertical-align: super;">+</span>';
+      D['about:intro.stat4Label'] = 'Regular Clients';
+      D['about:intro.image'] = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80';
+      D['about:quote.text'] = '"We’re not just taking pictures — we’re capturing spaces with purpose."';
+      D['about:values.eyebrow'] = 'What we stand for';
+      D['about:values.heading'] = 'Our Core Values';
+      D['about:values.subtitle'] = 'These principles guide everything we do — from how we work with clients to how we approach each shoot.';
+      D['about:values.card1.title'] = 'Quality Excellence';
+      D['about:values.card1.body'] = 'Every image, video and tour is crafted to the highest professional standard.';
+      D['about:values.card2.title'] = 'Timeliness';
+      D['about:values.card2.body'] = 'Guaranteed 24-hour turnaround on standard packages — every time.';
+      D['about:values.card3.title'] = 'Passion';
+      D['about:values.card3.body'] = 'We love what we do and constantly evolve our craft to showcase properties beautifully.';
+      D['about:values.card4.title'] = 'Client Satisfaction';
+      D['about:values.card4.body'] = 'Your success is ours. We collaborate closely so the work exceeds expectations.';
+      D['about:values.card5.title'] = 'Innovation';
+      D['about:values.card5.body'] = 'We adopt the latest tools and techniques to keep your listings ahead of the market.';
+      D['about:values.card6.title'] = 'Attention to Detail';
+      D['about:values.card6.body'] = 'The little things matter. Every angle, every finish, every light.';
+      D['about:process.eyebrow'] = 'Our Process';
+      D['about:process.heading'] = 'Our Process';
+      D['about:process.subtitle'] = 'A streamlined experience so you get outstanding visual content with minimal hassle.';
+      D['about:process.step1.title'] = 'Book your appointment';
+      D['about:process.step1.body'] = 'Use our simple online booking form to schedule a time that works for you. We confirm within hours.';
+      D['about:process.step2.title'] = 'Property assessment & shoot';
+      D['about:process.step2.body'] = 'Our photographer arrives on time and captures the best angles, details and lifestyle moments.';
+      D['about:process.step3.title'] = 'Professional editing';
+      D['about:process.step3.body'] = 'Our editors hand-color correct, enhance lighting and prepare polished virtual staging where needed.';
+      D['about:process.step4.title'] = 'Delivery & implementation';
+      D['about:process.step4.body'] = 'Receive your media within 24 hours — ready for listing, marketing and social promotion.';
+      D['about:process.step5.title'] = 'Feedback & follow-up';
+      D['about:process.step5.body'] = 'We check in to make sure you’re delighted and handle any extra requests promptly.';
+      D['about:cta.badge'] = '✔ Quality Guarantee';
+      D['about:cta.heading'] = 'Not happy? We’ll reshoot — on us.';
+      D['about:cta.body'] = 'We back every shoot with a 100% satisfaction guarantee. If it isn’t right, we make it right.';
+      D['about:cta.primaryBtn'] = 'Book Your Shoot';
+      D['about:cta.secondaryBtn'] = 'View Packages';
+
+      D['services:hero.heading'] = 'Our Services';
+      D['services:hero.subtitle'] = 'Professional real estate photography and media services';
+      D['services:hero.pill1'] = 'Interior & Exterior Photos';
+      D['services:hero.pill2'] = '2D & 3D Floor Plans';
+      D['services:hero.pill3'] = 'Virtual Tours';
+      D['services:hero.pill4'] = 'Exterior Video';
+      D['services:hero.pill5'] = 'Virtual Staging';
+      D['services:hero.backgroundImage'] = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=80';
+      D['services:intro.heading'] = 'Comprehensive Visual Solutions for Properties';
+      D['services:intro.body'] = 'Each service is designed to showcase properties in their best light, helping your listings stand out in the competitive real estate market.';
+      D['services:card1.title'] = 'Interior Photos';
+      D['services:card1.body'] = 'Bright, polished interior photography that presents every room at its best.';
+      D['services:card1.image'] = 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80';
+      D['services:card2.title'] = 'Exterior Photos';
+      D['services:card2.body'] = 'Professional exterior photography that creates a strong first impression.';
+      D['services:card2.image'] = 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80';
+      D['services:card3.title'] = '2D & 3D Floor Plans';
+      D['services:card3.body'] = 'Clear 2D and 3D floor plans that help buyers understand the property layout.';
+      D['services:card3.image'] = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80';
+      D['services:card4.title'] = 'Virtual Tours';
+      D['services:card4.body'] = 'Immersive virtual walkthroughs that let buyers explore the property remotely.';
+      D['services:card4.image'] = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80';
+      D['services:card5.title'] = 'Exterior Cinematic Videos';
+      D['services:card5.body'] = 'Cinematic video coverage focused exclusively on the property\'s exterior.';
+      D['services:card5.image'] = 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80';
+      D['services:card6.title'] = 'Virtual Staging';
+      D['services:card6.body'] = 'Transform empty spaces into furnished dreams that sell faster.';
+      D['services:card6.image'] = 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80';
+      D['services:cta.text'] = 'View Our Packages →';
+
+      D['packages:hero.label'] = 'Professional Photography Solutions';
+      D['packages:hero.heading'] = 'Our Packages & Services';
+      D['packages:hero.subtitle'] = 'Choose from our range of professional photography packages designed to showcase your property in its best light.';
+      D['packages:hero.pill1'] = 'Starting at $199';
+      D['packages:hero.pill2'] = 'Interior & Exterior';
+      D['packages:hero.pill3'] = 'Floor Plans';
+      D['packages:hero.pill4'] = 'Virtual Tours';
+      D['packages:hero.pill5'] = 'Virtual Staging';
+      D['packages:hero.backgroundImage'] = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=80';
+      D['packages:grid.label'] = 'Real Estate Media Packages';
+      D['packages:grid.heading'] = 'Find your perfect package';
+      D['packages:grid.subtitle'] = 'All packages include professional editing, fast delivery and a satisfaction guarantee.';
+      D['packages:pkg-basic.title'] = 'Basic';
+      D['packages:pkg-basic.description'] = 'Professional HDR Photography Package';
+      D['packages:pkg-standard.title'] = 'Standard';
+      D['packages:pkg-standard.description'] = 'Complete Media Package with Drone + 4K Video';
+      D['packages:pkg-pro.title'] = 'Pro';
+      D['packages:pkg-pro.description'] = 'Premium Package with Virtual Tours + Digital Staging';
+      D['packages:pkg-basicplus.title'] = 'Basic+';
+      D['packages:pkg-basicplus.description'] = 'HDR Photography + Photo Slideshow Video + Floor Plans';
+
+      // Pricing Table — site par size tabs ke defaults (admin inputs pre-filled)
+      (function () {
+        var pricingDefaults = {
+          basic: ['$199', '$299', '$399', '$599', 'Contact for Pricing'],
+          standard: ['$359', '$449', '$539', '$719', 'Contact for Pricing'],
+          pro: ['$539', '$629', '$764', '$899', 'Contact for Pricing'],
+          basicplus: ['$249', '$349', '$499', '$699', 'Contact for Pricing']
+        };
+        Object.keys(pricingDefaults).forEach(function (pkg) {
+          pricingDefaults[pkg].forEach(function (v, i) {
+            D['packages:pricing_' + pkg + '_s' + (i + 1)] = v;
+          });
+        });
+      })();
+
+      D['packages:note.text'] = '* First-time clients may qualify for special discounts. Contact us for details.';
+      D['packages:promo.heading'] = '10% OFF Applied to Standard & Pro Only';
+      D['packages:promo.sub'] = 'Premium packages at discounted rates — limited time';
+      D['packages:compare.text'] = 'Compare All Features';
+
+      D['portfolio:hero.label'] = 'Premium Real Estate Photography';
+      D['portfolio:hero.heading'] = 'Stunning Photography That Sells';
+      D['portfolio:hero.subtitle'] = 'Interior and exterior photography, floor plans, virtual tours, exterior video and virtual staging that showcase properties at their best.';
+      D['portfolio:hero.stat1'] = '8+ Years';
+      D['portfolio:hero.stat2'] = '1,200+ Properties';
+      D['portfolio:hero.stat3'] = '25+ Cities';
+      D['portfolio:hero.stat4'] = '40% Faster Sales';
+      D['portfolio:hero.backgroundImage'] = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=80';
+      D['portfolio:gallery.heading'] = 'Our Portfolio';
+      D['portfolio:gallery.subtitle'] = 'Explore our collection of professional real estate photography across categories.';
+
+      D['contact:hero.label'] = 'Get In Touch';
+      D['contact:hero.heading'] = 'Contact Us';
+      D['contact:hero.subtitle'] = 'Contact Vansh Sharma for professional real estate media, available anywhere.';
+      D['contact:hero.pill1'] = 'Fast Response';
+      D['contact:hero.pill2'] = 'Free Quotes';
+      D['contact:hero.pill3'] = 'Flexible Scheduling';
+      D['contact:hero.backgroundImage'] = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1800&q=80';
+      D['contact:form.heading'] = 'Send Us a Message';
+      D['contact:form.intro'] = 'Fill out the form below and we\'ll get back to you within 24 hours.';
+      D['contact:info1.title'] = 'Availability';
+      D['contact:info1.body'] = 'Bookings are available anywhere. Contact us for a quote and scheduling options.';
+      D['contact:info2.title'] = 'Phone';
+      D['contact:info2.body'] = '<a href="tel:+14375599494">+1 (437) 559-9494</a>';
+      D['contact:info3.title'] = 'Email';
+      D['contact:info3.body'] = '<a href="mailto:vansh.sharma2788@gmail.com">vansh.sharma2788@gmail.com</a>';
+      D['contact:info4.title'] = 'Business Hours';
+      D['contact:info4.body'] = 'Every day: 9:00 AM – 6:00 PM';
+
+      // ===== state =====
+      let savedData = {};   // Firestore se merge hua data
+      let cmsData = {};     // current form state
+      let pendingFiles = {}; // key → File (Save Changes par upload hoga)
+      let toastTimer = null;
+      let toastSubTimer = null;
+
+      const $ = (sel) => document.querySelector(sel);
+      const $$ = (sel) => document.querySelectorAll(sel);
+
+      function setDbStatus(kind, text) {
+        $('#dbStatus').className = 'status-dot' + (kind === 'ok' ? ' ok' : kind === 'err' ? ' err' : '');
+        $('#dbStatusText').textContent = text;
+      }
+
+      // ===== Big green toast =====
+      function showToast(message, sub, isError) {
+        const t = $('#saveToast');
+        $('#saveToastSub').textContent = sub || '';
+        t.className = 'save-toast show' + (isError ? ' err' : '');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          t.className = 'save-toast' + (isError ? ' err' : '');
+        }, 3500);
+      }
+
+      function showSaveProgress(show, total) {
+        const el = $('#saveProgress');
+        if (el) el.className = 'save-progress' + (show ? ' show' : '');
+        if (show) setSaveProgress(0, 'Uploading image 1/' + total + ' — 0%');
+      }
+
+      function setSaveProgress(pct, label) {
+        const f = $('#saveProgressFill');
+        const l = $('#saveProgressLabel');
+        if (f) f.style.width = pct + '%';
+        if (l) l.textContent = label || '';
+      }
+
+      function keyToId(key) { return key.replace(/[:.]/g, '-'); }
+
+      // ===== Build UI from schema =====
+
+      // ===== Build UI from schema =====
+      function esc(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      function buildUI() {
+        const host = $('#pageHost');
+        let html = '';
+
+        PAGES.forEach((page) => {
+          const conf = SCHEMA[page];
+          html += '<div class="page-panel' + (page === 'home' ? ' active' : '') + '" id="page-' + page + '">';
+          html += '<div class="tabs" data-tabs-for="' + page + '">';
+          conf.sections.forEach((sec, i) => {
+            html += '<button class="tab-btn' + (i === 0 ? ' active' : '') + '" data-sec="' + sec.id + '" type="button">' + esc(sec.name) + '</button>';
+          });
+          html += '</div>';
+
+          conf.sections.forEach((sec, i) => {
+            html += '<div class="sec-panel' + (i === 0 ? ' active' : '') + '" id="' + page + '-' + sec.id + '">';
+            html += '<div class="panel-card"><h2>' + esc(sec.card) + '</h2><p class="hint">' + esc(sec.hint) + '</p><div class="form-grid">';
+            if (sec.gallery) {
+              // ===== Gallery media manager (multi-file images + videos) =====
+              html += '</div>'
+                + '<div class="gal-manager" id="galManager">'
+                + '<div class="gal-tabs">'
+                + '<button type="button" class="gal-tab active" data-gtab="images">🖼️ Images</button>'
+                + '<button type="button" class="gal-tab" data-gtab="videos">🎬 Videos</button>'
+                + '</div>'
+                + '<div class="gal-upload-row">'
+                + '<input type="file" id="galFiles" accept="image/*" multiple data-gtype="image" />'
+                + '<span class="upload-state" id="galState"></span>'
+                + '</div>'
+                + '<div class="gal-grid" id="galGrid"></div>'
+                + '</div></div></div>';
+              return;
+            }
+            sec.fields.forEach((f) => {
+              const key = page + ':' + f.k;
+              const id = keyToId(key);
+              if (f.t === 'img') {
+                html += '<div class="field' + (f.full ? ' full' : '') + '"><div class="image-upload">'
+                  + '<div class="preview" id="prev-' + id + '" data-label="' + esc(f.l) + '"></div>'
+                  + '<div class="row">'
+                  + '<input type="file" id="file-' + id + '" accept="image/*" data-target="' + key + '" />'
+                  + '<button type="button" class="img-clear-btn" data-clear="' + key + '" title="Is field se image hatado (Cloudinary me rahegi)">✕ Clear</button>'
+                  + '<span class="upload-state" id="state-' + id + '"></span></div>'
+                  + '<div class="row"><input type="url" id="url-' + id + '" placeholder="…or paste an image URL" data-url-for="' + key + '" /></div>'
+                  + '</div></div>';
+              } else {
+                const input = f.t === 'ta'
+                  ? '<textarea id="f-' + id + '" data-field="' + key + '"' + (f.h ? ' data-html="true"' : '') + '></textarea>'
+                  : '<input type="text" id="f-' + id + '" data-field="' + key + '"' + (f.h ? ' data-html="true"' : '') + ' />';
+                html += '<div class="field' + (f.t === 'ta' ? ' full' : '') + '"><label for="f-' + id + '">' + esc(f.l) + '</label>' + input + '</div>';
+              }
+            });
+            html += '</div></div></div>';
+          });
+
+          html += '</div>';
+        });
+
+        html += '<div class="page-panel" id="page-imageFolders">'
+          + '<div class="panel-card"><h2>Image Folder</h2>'
+          + '<p class="hint">Choose Files se ek saath multiple images aur videos select karke upload karo — dono supported hain. Add karne ke baad Save Changes dabakar portfolio par publish karein.</p>'
+          + '<div class="project-folder-form">'
+          + '<label>Folder name<input id="projectFolderName" type="text" maxlength="100" placeholder="e.g. Oakville Modern Home" /></label>'
+          + '<label>Folder thumbnail<input id="projectFolderThumb" type="file" accept="image/*" /></label>'
+          + '<label>Choose files (images &amp; videos — multi select)<input id="projectFolderFiles" type="file" accept="image/*,video/*" multiple /></label>'
+          + '<div class="row"><span class="upload-state" id="projectFolderStatus" role="status" aria-live="polite"></span><button class="btn btn-gold" id="addProjectFolder" type="button">Upload &amp; Add Folder</button></div>'
+          + '</div><div class="project-folder-list" id="projectFolderList"></div></div></div>';
+
+        host.innerHTML = html;
+
+        buildGalleryManager();
+        buildProjectFolderManager();
+
+        // tabs wiring
+        $$('.tabs').forEach((tabBar) => {
+          tabBar.querySelectorAll('.tab-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              tabBar.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+              btn.classList.add('active');
+              const page = tabBar.getAttribute('data-tabs-for');
+              const sec = btn.getAttribute('data-sec');
+              document.querySelectorAll('#page-' + page + ' > .sec-panel').forEach((p) => p.classList.remove('active'));
+              document.getElementById(page + '-' + sec).classList.add('active');
+            });
+          });
+        });
+      }
+
+      // ===== Gallery media manager (images + videos) =====
+      let galleryItems = []; // { type: 'image'|'video', url }
+      let projectFolders = [];
+
+      function buildProjectFolderManager() {
+        const folderInput = $('#projectFolderFiles');
+        const thumbInput = $('#projectFolderThumb');
+        const nameInput = $('#projectFolderName');
+        const addButton = $('#addProjectFolder');
+        const status = $('#projectFolderStatus');
+        if (!folderInput || !thumbInput || !addButton) return;
+
+        folderInput.addEventListener('change', () => {
+          const count = Array.from(folderInput.files || []).filter((file) => file.type.startsWith('image/') || file.type.startsWith('video/')).length;
+          status.textContent = count ? count + ' image/video files selected.' : 'No images/videos selected — images aur videos dono select kar sakte ho.';
+        });
+
+        addButton.addEventListener('click', async () => {
+          const name = nameInput.value.trim();
+          const mediaFiles = Array.from(folderInput.files || []).filter((file) => file.type.startsWith('image/') || file.type.startsWith('video/'));
+          const thumbnail = thumbInput.files && thumbInput.files[0];
+          if (!name || !thumbnail || !thumbnail.type.startsWith('image/') || !mediaFiles.length) {
+            status.textContent = 'Enter a folder name, choose an image thumbnail, and select images/videos files (multi select supported).';
+            status.className = 'upload-state err';
+            return;
+          }
+
+          addButton.disabled = true;
+          status.className = 'upload-state';
+          try {
+            const total = mediaFiles.length + 1;
+            showSaveProgress(true, total);
+            status.textContent = 'Uploading thumbnail and ' + mediaFiles.length + ' media files…';
+            const thumbnailUrl = await uploadWithProgress(thumbnail, (pct) => {
+              setSaveProgress(Math.round(pct / total), 'Uploading thumbnail — ' + pct + '%');
+            });
+            setSaveProgress(Math.round((1 / total) * 100), 'Uploading 0/' + mediaFiles.length + ' media files…');
+            const uploaded = await uploadFilesParallel(mediaFiles, {
+              onProgress: (i, pct) => {
+                const overall = Math.min(99, Math.round(((1 + (i + pct / 100) / mediaFiles.length) / total) * 100));
+                setSaveProgress(overall, 'Uploading ' + Math.min(i + 1, mediaFiles.length) + '/' + mediaFiles.length + ' — ' + pct + '%');
+              }
+            });
+            const items = [];
+            const failedNames = [];
+            mediaFiles.forEach((file, i) => {
+              const url = uploaded.results[i];
+              if (url) items.push({ type: file.type.startsWith('video/') ? 'video' : 'image', url: url, name: file.name });
+              else failedNames.push(file.name);
+            });
+            if (failedNames.length) console.warn('Failed uploads:', failedNames, uploaded.errors);
+            if (!items.length) {
+              throw new Error('All ' + failedNames.length + ' uploads failed — ' + ((uploaded.firstError && uploaded.firstError.message) || 'unknown error'));
+            }
+
+            projectFolders.push({
+              id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2),
+              name: name,
+              thumbnail: thumbnailUrl,
+              items: items
+            });
+            cmsData['portfolio:projectFolders'] = projectFolders.map((project) => ({ ...project }));
+            renderProjectFolders();
+            nameInput.value = '';
+            thumbInput.value = '';
+            folderInput.value = '';
+            status.className = 'upload-state ok';
+            status.textContent = failedNames.length
+              ? 'Folder uploaded (' + items.length + ' ok, ' + failedNames.length + ' failed). Failed: ' + failedNames.slice(0, 3).join(', ') + (failedNames.length > 3 ? '…' : '') + ' — Save Changes dabao.'
+              : 'Folder uploaded. Press Save Changes to publish it on the portfolio page.';
+          } catch (error) {
+            status.className = 'upload-state err';
+            status.textContent = 'Upload failed: ' + error.message;
+          } finally {
+            addButton.disabled = false;
+            showSaveProgress(false);
+          }
+        });
+
+        renderProjectFolders();
+      }
+
+      function renderProjectFolders() {
+        const host = $('#projectFolderList');
+        if (!host) return;
+        host.innerHTML = projectFolders.map((project, index) => '<article class="project-folder-item">'
+          + '<img src="' + esc(project.thumbnail || '') + '" alt="" />'
+          + '<div class="details"><div><strong>' + esc(project.name || 'Untitled folder') + '</strong><br><small>' + (Array.isArray(project.items) ? project.items.length : 0) + ' files</small></div>'
+          + '<button type="button" data-remove-project="' + index + '" aria-label="Remove ' + esc(project.name || 'folder') + '">Remove</button></div></article>').join('');
+        host.querySelectorAll('[data-remove-project]').forEach((button) => {
+          button.addEventListener('click', () => {
+            projectFolders.splice(Number(button.getAttribute('data-remove-project')), 1);
+            cmsData['portfolio:projectFolders'] = projectFolders.map((project) => ({ ...project }));
+            renderProjectFolders();
+          });
+        });
+      }
+
+      function buildGalleryManager() {
+        const manager = document.getElementById('galManager');
+        if (!manager) return;
+
+        manager.querySelectorAll('.gal-tab').forEach((tab) => {
+          tab.addEventListener('click', () => {
+            manager.querySelectorAll('.gal-tab').forEach((t) => t.classList.remove('active'));
+            tab.classList.add('active');
+            const type = tab.getAttribute('data-gtab');
+            const input = document.getElementById('galFiles');
+            input.setAttribute('data-gtype', type);
+            input.setAttribute('accept', type === 'video' ? 'video/*' : 'image/*');
+            input.value = '';
+          });
+        });
+
+        document.getElementById('galFiles').addEventListener('change', async (e) => {
+          const input = e.target;
+          const type = input.getAttribute('data-gtype') || 'image';
+          const files = Array.from(input.files || []);
+          if (!files.length) return;
+          const state = document.getElementById('galState');
+          if (state) { state.className = 'upload-state'; state.textContent = 'Uploading 0/' + files.length + '…'; }
+          const uploaded = await uploadFilesParallel(files, {
+            onProgress: (i, pct) => {
+              if (state) state.textContent = 'Uploading ' + Math.min(i + 1, files.length) + '/' + files.length + ' — ' + pct + '%';
+            },
+            onFileDone: (done, total) => {
+              if (state) state.textContent = 'Uploaded ' + done + '/' + total + ' done…';
+            }
+          });
+          const newIdxs = [];
+          const failedNames = [];
+          files.forEach((file, i) => {
+            const url = uploaded.results[i];
+            if (url) {
+              galleryItems.push({ type: type, url: url });
+              newIdxs.push(galleryItems.length - 1);
+            } else {
+              failedNames.push(file.name);
+            }
+          });
+          cmsData['portfolio:galleryItems'] = JSON.parse(JSON.stringify(galleryItems));
+          renderGalleryItems(newIdxs);
+          if (state) {
+            state.className = failedNames.length ? 'upload-state err' : 'upload-state ok';
+            state.textContent = failedNames.length
+              ? '✓ ' + (files.length - failedNames.length) + ' added, ' + failedNames.length + ' failed: ' + failedNames.slice(0, 2).join(', ')
+              : '✓ ' + files.length + ' file(s) added — "Save Changes" dabao';
+          }
+          input.value = '';
+        });
+
+        renderGalleryItems();
+      }
+
+      function renderGalleryItems(newIdxs) {
+        const grid = document.getElementById('galGrid');
+        if (!grid) return;
+        grid.innerHTML = galleryItems.map((item, idx) => {
+          const isNew = Array.isArray(newIdxs) && newIdxs.includes(idx);
+          const media = item.type === 'video'
+            ? '<video src="' + item.url + '" muted preload="metadata"></video>'
+            : '<img src="' + item.url + '" alt="" />';
+          return '<div class="gal-item' + (isNew ? ' new-item' : '') + '">'
+            + media
+            + '<span class="gal-type">' + (item.type === 'video' ? 'Video' : 'Image') + '</span>'
+            + '<button class="gal-del" type="button" data-gdel="' + idx + '" title="Remove">✕</button>'
+            + '<div class="gal-move">'
+            + '<button type="button" data-gleft="' + idx + '" title="Move left">←</button>'
+            + '<button type="button" data-gright="' + idx + '" title="Move right">→</button>'
+            + '</div>'
+            + '</div>';
+        }).join('');
+
+        grid.querySelectorAll('[data-gdel]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            galleryItems.splice(parseInt(btn.getAttribute('data-gdel'), 10), 1);
+            cmsData['portfolio:galleryItems'] = JSON.parse(JSON.stringify(galleryItems));
+            renderGalleryItems();
+          });
+        });
+        grid.querySelectorAll('[data-gleft]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const i = parseInt(btn.getAttribute('data-gleft'), 10);
+            if (i > 0) {
+              [galleryItems[i - 1], galleryItems[i]] = [galleryItems[i], galleryItems[i - 1]];
+              cmsData['portfolio:galleryItems'] = JSON.parse(JSON.stringify(galleryItems));
+              renderGalleryItems();
+            }
+          });
+        });
+        grid.querySelectorAll('[data-gright]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const i = parseInt(btn.getAttribute('data-gright'), 10);
+            if (i < galleryItems.length - 1) {
+              [galleryItems[i], galleryItems[i + 1]] = [galleryItems[i + 1], galleryItems[i]];
+              cmsData['portfolio:galleryItems'] = JSON.parse(JSON.stringify(galleryItems));
+              renderGalleryItems();
+            }
+          });
+        });
+      }
+
+      // ===== Sidebar page switching + mobile toggle =====
+      function wireSidebar() {
+        $$('.side-link[data-page]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            $$('.side-link[data-page]').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            const page = btn.getAttribute('data-page');
+            const panel = document.getElementById('page-' + page);
+            $$('.page-panel').forEach((p) => p.classList.remove('active'));
+            // Panel render na hua ho to Home pe fallback (blank screen se bachne ke liye)
+            if (panel) {
+              panel.classList.add('active');
+              const firstSec = panel.querySelector('.sec-panel');
+              panel.querySelectorAll('.sec-panel').forEach((p) => p.classList.remove('active'));
+              if (firstSec) firstSec.classList.add('active');
+              const firstTab = panel.querySelector('.tab-btn');
+              panel.querySelectorAll('.tab-btn').forEach((t) => t.classList.remove('active'));
+              if (firstTab) firstTab.classList.add('active');
+            } else {
+              const home = document.getElementById('page-home');
+              if (home) home.classList.add('active');
+            }
+            closeSidebar();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        if (toggle && sidebar) {
+          toggle.addEventListener('click', () => {
+            const open = sidebar.classList.toggle('open');
+            toggle.classList.toggle('active', open);
+            toggle.setAttribute('aria-expanded', String(open));
+          });
+        }
+      }
+
+      function closeSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const toggle = document.getElementById('sidebarToggle');
+        if (sidebar) sidebar.classList.remove('open');
+        if (toggle) { toggle.classList.remove('active'); toggle.setAttribute('aria-expanded', 'false'); }
+      }
+
+      // ===== Load Firestore data for all pages =====
+      async function loadAll() {
+        try {
+          setDbStatus('', 'Connecting…');
+          const snaps = await Promise.all(PAGES.map((p) => getDoc(doc(db, 'cms', p))));
+          savedData = {};
+          // Firestore keys bare hote hain (hero.image) — form keys prefixed hote hain (home:hero.image)
+          PAGES.forEach((p, i) => {
+            if (snaps[i].exists()) {
+              Object.entries(snaps[i].data()).forEach(([k, v]) => { savedData[p + ':' + k] = v; });
+            }
+          });
+          cmsData = Object.assign({}, D, savedData);
+          fillForm();
+          setDbStatus('ok', 'Firestore connected');
+          if (Object.keys(savedData).length) {
+            showToast('Saved content loaded', 'Firestore se aapka saved data form me bhar gaya hai', false);
+          }
+        } catch (e) {
+          console.error(e);
+          cmsData = Object.assign({}, D);
+          fillForm();
+          setDbStatus('err', 'Firestore error — defaults loaded');
+          showToast('Firestore Error', e.message + ' — defaults loaded, save ke liye rules check karo', true);
+        }
+      }
+
+      function fillForm() {
+        $$('[data-field]').forEach((el) => {
+          const v = cmsData[el.getAttribute('data-field')];
+          el.value = typeof v === 'string' ? v : '';
+        });
+        $$('[data-target]').forEach((el) => {
+          const key = el.getAttribute('data-target');
+          const v = cmsData[key];
+          const id = keyToId(key);
+          const state = document.getElementById('state-' + id);
+          const prev = document.getElementById('prev-' + id);
+          const urlInput = document.getElementById('url-' + id);
+          if (typeof v === 'string' && v) {
+            if (prev) prev.style.backgroundImage = 'url("' + v + '")';
+            if (urlInput) urlInput.value = v;
+            if (state) { state.className = 'upload-state ok'; state.textContent = '✓ Current image set'; }
+          } else {
+            if (prev) prev.style.backgroundImage = 'none';
+            if (urlInput) urlInput.value = '';
+            if (state) { state.className = 'upload-state'; state.textContent = ''; }
+          }
+        });
+
+        // gallery items → manager
+        const gi = cmsData['portfolio:galleryItems'];
+        galleryItems = Array.isArray(gi) ? gi.map((x) => ({ type: x.type, url: x.url })) : [];
+        if (document.getElementById('galGrid')) renderGalleryItems();
+        const projects = cmsData['portfolio:projectFolders'];
+        projectFolders = Array.isArray(projects) ? projects.map((project) => ({ ...project })) : [];
+        renderProjectFolders();
+      }
+
+      // ===== Cloudinary helpers =====
+      function extractPublicId(url) {
+        try {
+          const m = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[a-zA-Z0-9]+)?(?:[?#].*)?$/);
+          return m ? m[1] : null;
+        } catch { return null; }
+      }
+
+      // API secret hardcoded — delete ke waqt koi prompt nahi aayega
+
+      // Pure-JS SHA-1 — crypto.subtle ki zaroorat nahi (file:// aur http par bhi chalega)
+      function sha1Hex(message) {
+        const rotl = (n, s) => (n << s) | (n >>> (32 - s));
+        const bytes = new TextEncoder().encode(message);
+        const ml = bytes.length;
+        const padded = new Uint8Array(((ml + 8) >> 6 << 6) + 64);
+        padded.set(bytes);
+        padded[ml] = 0x80;
+        const dv = new DataView(padded.buffer);
+        dv.setUint32(padded.length - 4, ml * 8);
+        let h0 = 0x67452301, h1 = 0xEFCDAB89, h2 = 0x98BADCFE, h3 = 0x10325476, h4 = 0xC3D2E1F0;
+        const w = new Uint32Array(80);
+        for (let i = 0; i < padded.length; i += 64) {
+          for (let j = 0; j < 16; j++) w[j] = dv.getUint32(i + j * 4);
+          for (let j = 16; j < 80; j++) w[j] = rotl(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1);
+          let a = h0, b = h1, c = h2, d = h3, e = h4;
+          for (let j = 0; j < 80; j++) {
+            let f, k;
+            if (j < 20) { f = (b & c) | (~b & d); k = 0x5A827999; }
+            else if (j < 40) { f = b ^ c ^ d; k = 0x6ED9EBA1; }
+            else if (j < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }
+            else { f = b ^ c ^ d; k = 0xCA62C1D6; }
+            const t = (rotl(a, 5) + f + e + k + w[j]) >>> 0;
+            e = d; d = c; c = rotl(b, 30); b = a; a = t;
+          }
+          h0 = (h0 + a) >>> 0; h1 = (h1 + b) >>> 0; h2 = (h2 + c) >>> 0; h3 = (h3 + d) >>> 0; h4 = (h4 + e) >>> 0;
+        }
+        return [h0, h1, h2, h3, h4].map(x => x.toString(16).padStart(8, '0')).join('');
+      }
+
+      // Signed destroy — Cloudinary purani image ko permanently delete karta hai
+      async function deleteFromCloudinary(url) {
+        const publicId = extractPublicId(url);
+        if (!publicId) return { ok: false, skipped: true, error: 'public_id not found in URL' };
+        const secret = CLOUDINARY_API_SECRET;
+        try {
+          const timestamp = Math.floor(Date.now() / 1000);
+          const signature = sha1Hex('public_id=' + publicId + '&timestamp=' + timestamp + secret);
+          const body = new URLSearchParams({
+            public_id: publicId,
+            timestamp: String(timestamp),
+            api_key: CLOUDINARY_API_KEY,
+            signature: signature
+          });
+          const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/destroy', {
+            method: 'POST',
+            body: body
+          });
+
+          let json = null;
+          try { json = await res.json(); }
+          catch { json = null; }
+
+          console.log('[Cloudinary destroy]', publicId, 'HTTP', res.status, json);
+
+          // auth/validation errors: {error: {message: "..."}}
+          if (json && json.error) {
+            const msg = json.error.message || ('HTTP ' + res.status);
+            return { ok: false, skipped: false, error: msg, forbidden: res.status === 403 || msg.includes('forbidden') || msg.includes('missing permissions') };
+          }
+          if (!res.ok) {
+            return { ok: false, skipped: false, error: 'HTTP ' + res.status, forbidden: res.status === 403 };
+          }
+          if (!json || !json.result) {
+            return { ok: false, skipped: false, error: 'Empty response (HTTP ' + res.status + ')' };
+          }
+
+          // "not found" = Cloudinary me already nahi hai — effectively deleted hi maano
+          if (json.result === 'not found') {
+            return { ok: true, skipped: false, result: 'not found' };
+          }
+
+          return { ok: json.result === 'ok', skipped: false, result: json.result };
+        } catch (e) {
+          console.warn('Cloudinary delete failed:', e.message);
+          return { ok: false, skipped: false, error: e.message };
+        }
+      }
+
+      // XHR upload — progress % report karta hai (Save par use hota hai)
+      function uploadOnce(file, onProgress) {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          const resourceType = file.type.startsWith('video/') ? 'video' : 'image';
+          xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/' + resourceType + '/upload');
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100));
+          };
+          xhr.onload = () => {
+            try {
+              const json = JSON.parse(xhr.responseText);
+              if (xhr.status >= 200 && xhr.status < 300 && json.secure_url) resolve(json.secure_url);
+              else reject(new Error(json.error && json.error.message ? json.error.message : 'HTTP ' + xhr.status));
+            } catch (err) {
+              reject(new Error('Unexpected Cloudinary response'));
+            }
+          };
+          xhr.onerror = () => reject(new Error('Network error'));
+          const fd = new FormData();
+          fd.append('file', file);
+          fd.append('upload_preset', UPLOAD_PRESET);
+          xhr.send(fd);
+        });
+      }
+
+      // Badi images client-side compress — upload 5-10x fast aur Cloudinary size-limit errors khatam
+      async function compressImage(file, maxDim, quality) {
+        maxDim = maxDim || 2400; quality = quality || 0.82;
+        if (!file.type || file.type.indexOf('image/') !== 0) return file;
+        if (file.type === 'image/gif' || file.type === 'image/svg+xml') return file;
+        if (file.size < 1.2 * 1024 * 1024) return file; // chhoti files ko touch mat karo
+        try {
+          const bitmap = await createImageBitmap(file);
+          const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+          canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+          canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+          if (bitmap.close) bitmap.close();
+          const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', quality));
+          if (!blob || blob.size >= file.size) return file;
+          const base = (file.name || 'image').replace(/\.[^.]+$/, '');
+          return new File([blob], base + '.jpg', { type: 'image/jpeg' });
+        } catch (e) {
+          console.warn('Compress skipped for', file.name, e);
+          return file;
+        }
+      }
+
+      // Upload with auto-compress + retry (3 attempts) — ek network glitch se file fail nahi hogi
+      const UPLOAD_CONCURRENCY = 3;
+      async function uploadWithProgress(file, onProgress) {
+        const prepared = await compressImage(file);
+        const maxAttempts = 3;
+        let lastErr = null;
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+          try {
+            return await uploadOnce(prepared, onProgress);
+          } catch (err) {
+            lastErr = err;
+            const permanent = /too large|file size|whitelist|not allowed|unsigned/i.test((err && err.message) || '');
+            if (attempt === maxAttempts || permanent) break;
+            await new Promise((r) => setTimeout(r, attempt * 1500));
+          }
+        }
+        // last resort: images ko aur aggressively compress karke ek aur try
+        try {
+          const harder = await compressImage(file, 1600, 0.7);
+          if (harder !== file) return await uploadOnce(harder, onProgress);
+        } catch (e2) { /* keep lastErr */ }
+        throw lastErr || new Error('Upload failed');
+      }
+
+      // Parallel uploads with concurrency limit — 60 files sequential ke bajaye ~3x tez
+      async function uploadFilesParallel(files, opts) {
+        opts = opts || {};
+        const results = new Array(files.length).fill(null);
+        const errors = {};
+        let next = 0;
+        let done = 0;
+        async function worker() {
+          while (next < files.length) {
+            const i = next++;
+            try {
+              results[i] = await uploadWithProgress(files[i], (pct) => { if (opts.onProgress) opts.onProgress(i, pct); });
+            } catch (err) {
+              errors[i] = err;
+            }
+            done++;
+            if (opts.onFileDone) opts.onFileDone(done, files.length);
+          }
+        }
+        await Promise.all(Array.from({ length: Math.min(UPLOAD_CONCURRENCY, Math.max(1, files.length)) }, worker));
+        const failedIdx = Object.keys(errors);
+        return { results: results, errors: errors, failedCount: failedIdx.length, firstError: failedIdx.length ? errors[failedIdx[0]] : null };
+      }
+
+      function wireUploads() {
+        $$('input[type="file"][data-target]').forEach((input) => {
+          input.addEventListener('change', () => {
+            const key = input.getAttribute('data-target');
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const id = keyToId(key);
+            pendingFiles[key] = file;
+
+            // turant local preview — upload Save par hoga
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const prev = document.getElementById('prev-' + id);
+              if (prev) prev.style.backgroundImage = 'url("' + e.target.result + '")';
+            };
+            reader.readAsDataURL(file);            const state = document.getElementById('state-' + id);
+            if (state) { state.className = 'upload-state ok'; state.textContent = '✓ Image ready — "Save Changes" par upload hogi'; }
+
+            input.value = '';
+          });
+        });
+
+        $$('input[type="url"][data-url-for]').forEach((urlInput) => {
+          urlInput.addEventListener('input', () => {
+            const key = urlInput.getAttribute('data-url-for');
+            const url = urlInput.value.trim();
+            if (url) {
+              cmsData[key] = url;
+              const id = keyToId(key);
+              const prev = document.getElementById('prev-' + id);
+              if (prev) prev.style.backgroundImage = 'url("' + url + '")';
+              const state = document.getElementById('state-' + id);
+              if (state) { state.className = 'upload-state ok'; state.textContent = '✓ URL set'; }
+            }
+          });
+        });
+
+        // Clear buttons — field se image hatao (Cloudinary me nahi jaati, bas yahan se remove)
+        $$('[data-clear]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-clear');
+            const id = keyToId(key);
+            delete pendingFiles[key];
+            delete cmsData[key];
+            const prev = document.getElementById('prev-' + id);
+            if (prev) prev.style.backgroundImage = 'none';
+            const urlInput = document.getElementById('url-' + id);
+            if (urlInput) urlInput.value = '';
+            const state = document.getElementById('state-' + id);
+            if (state) { state.className = 'upload-state'; state.textContent = ''; }
+          });
+        });
+      }
+
+      // ===== Collect + save =====
+      function collect() {
+        $$('[data-field]').forEach((el) => {
+          const k = el.getAttribute('data-field');
+          const v = el.value.trim();
+          if (v !== '') cmsData[k] = v; else delete cmsData[k];
+        });
+        $$('[data-target]').forEach((el) => {
+          const k = el.getAttribute('data-target');
+          const v = (cmsData[k] || '').trim();
+          if (v !== '') cmsData[k] = v; else delete cmsData[k];
+        });
+        return cmsData;
+      }
+
+      async function saveAll() {
+        const buttons = [$('#saveAllBtn'), $('#saveAllBtn2')];
+        try {
+          buttons.forEach((b) => { if (b) b.disabled = true; });
+
+          // 1) Pending images — progress ke saath Cloudinary par upload
+          const pendingKeys = Object.keys(pendingFiles);
+          if (pendingKeys.length) {
+            showSaveProgress(true, pendingKeys.length);
+            for (let i = 0; i < pendingKeys.length; i++) {
+              const key = pendingKeys[i];
+              const id = keyToId(key);
+              const state = document.getElementById('state-' + id);
+              const url = await uploadWithProgress(pendingFiles[key], (pct) => {
+                const overall = Math.min(99, Math.round(((i + pct / 100) / pendingKeys.length) * 100));
+                setSaveProgress(overall, 'Uploading image ' + (i + 1) + '/' + pendingKeys.length + ' — ' + pct + '%');
+                if (state) { state.className = 'upload-state'; state.textContent = 'Uploading… ' + pct + '%'; }
+              });
+
+              // purani Cloudinary image delete
+              const oldUrl = cmsData[key];
+              if (oldUrl && oldUrl.includes('res.cloudinary.com')) deleteFromCloudinary(oldUrl);
+
+              cmsData[key] = url;
+              const prev = document.getElementById('prev-' + id);
+              if (prev) prev.style.backgroundImage = 'url("' + url + '")';
+              const urlInput = document.getElementById('url-' + id);
+              if (urlInput) urlInput.value = url;
+              if (state) { state.className = 'upload-state ok'; state.textContent = '✓ Uploaded to Cloudinary'; }
+              delete pendingFiles[key];
+            }
+            setSaveProgress(100, 'Saving to Firestore…');
+          }
+
+          // 2) Firestore docs — ab final URLs ke saath
+          const data = collect();
+          const docs = {};
+          PAGES.forEach((p) => { docs[p] = {}; });
+          Object.keys(data).forEach((k) => {
+            const idx = k.indexOf(':');
+            const page = k.slice(0, idx);
+            const bare = k.slice(idx + 1);
+            if (docs[page]) docs[page][bare] = data[k];
+          });
+
+          // gallery items as Firestore array (only if manager initialized)
+          if (document.getElementById('galGrid')) {
+            docs.portfolio.galleryItems = galleryItems.map((x) => ({ type: x.type, url: x.url }));
+          }
+          docs.portfolio.projectFolders = projectFolders.map((project) => ({ ...project }));
+
+          // 3) Firestore save
+          await Promise.all(PAGES.map((p) => setDoc(doc(db, 'cms', p), cleanDoc(docs[p]))));
+          savedData = Object.assign({}, cmsData);
+          fillForm();
+          showToast('Saved Successfully!', 'Saare changes website par live ho gaye hain — pages refresh karke dekho', false);
+        } catch (e) {
+          console.error(e);
+          showToast('Save Failed', e.message, true);
+        } finally {
+          buttons.forEach((b) => { if (b) b.disabled = false; });
+          showSaveProgress(false);
+        }
+      }
+
+      // ===== Init =====
+      window.__dwsInitAdmin();
+
+      // unlock hote hi (password se ya already-unlocked) admin load karo
+      window.__dwsLock.onUnlock(() => {
+        buildUI();
+        wireSidebar();
+        wireUploads();
+        cmsData = Object.assign({}, D);
+        fillForm();
+        loadAll();
+        $('#saveAllBtn').addEventListener('click', saveAll);
+        $('#saveAllBtn2').addEventListener('click', saveAll);
+        $('#reloadBtn').addEventListener('click', loadAll);
+      });
+    </script>
+  </body>
+</html>
